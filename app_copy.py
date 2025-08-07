@@ -2298,7 +2298,7 @@ def reject_update(update_id):
         return "Invalid or expired rejection link.", 404
 
     if request.method == 'GET':
-        # Show the form to enter rejection reason
+       
         return f"""
         <form method="post">
             <label for="reason">Reason for rejection:</label><br>
@@ -2349,7 +2349,7 @@ def commit_to_github(update):
 @app.route('/logout')
 def logout():
     session.pop('username', None)
-    return render_template('login.html')  # Go back to login after logout
+    return render_template('login.html') 
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
