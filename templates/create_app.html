@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Create Splunk App</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body { background: #f8f9fa; padding: 2rem; }
+    .custom-field-row { margin-bottom: 0.5rem; }
+    .section { margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Create Splunk App</h1>
+    <div class="section">
+      <label for="appName" class="form-label">App Name</label>
+      <input id="appName" type="text" class="form-control" placeholder="Enter App Name" />
+    </div>
+
+    <div id="inputsSection" class="section">
+      <h3>Inputs</h3>
+      <div id="inputsContainer"></div>
+      <button type="button" class="btn btn-outline-primary btn-sm" onclick="addInput()">+ Add Input</button>
+    </div>
+
+    <div id="propsSection" class="section">
+      <h3>Props Config</h3>
+      <div id="propsContainer"></div>
+      <button type="button" class="btn btn-outline-primary btn-sm" onclick="addProp()">+ Add Prop</button>
+    </div>
+
+    <div id="transformsSection" class="section">
+      <h3>Transforms Config</h3>
+      <div id="transformsContainer"></div>
+      <button type="button" class="btn btn-outline-primary btn-sm" onclick="addTransform()">+ Add Transform</button>
+    </div>
+
+    <button class="btn btn-success btn-lg mt-4" onclick="createApp()">Create App</button>
+  </div>
+
+  <script>
+    // These JS vars hold your data, simulating what your backend expects
+    window.inputs = [];
+    window.propsConfig = {};
+    window.transformsConfig = {};
+
+    // Add Input UI
+    function addInput() {
+      const idx = inputs.length;
+      const container = document.createElement('div');
+      container.className = 'border rounded p-3 mb-3';
+      container.dataset.idx = idx;
+
+      container.innerHTML = `
+        <label>File Path: <input type="text" class="form-control mb-2" onchange="updateInput(${idx}, 'filePath', this.value)" placeholder="/path/to/file.log"/></label>
+        <label>Sourcetype: <input type="text" class="form-control mb-2" onchange="updateInput(${idx}, 'sourcetype', this.value)" placeholder="sourcetype"/></label>
+        <label>Index: <input type="text" class="form-control mb-2" onchange="updateInput(${idx}, 'index', this.value)" placeholder="index (optional)"/></label>
+        <div id="customFields_${idx}" class="mb-2">
+          <label>Custom Fields:</label>
+          <div></div>
+          <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addCustomField(${idx})">+ Add Custom Field</button>
+        </div>
+      `;
+
+      document.getElementById('inputsContainer').appendChild(container);
+
+      inputs.push({ filePath: '', sourcetype: '', index: '', customFields: [] });
+    }
+
+    function updateInput(idx, key, value) {
+      inputs[idx][key] = value.trim();
+    }
+
+    function addCustomField(inputIdx) {
+      const container = document.querySelector(`#customFields_${inputIdx} div`);
+      const cfIdx = inputs[inputIdx].customFields.length;
+
+      const div = document.createElement('div');
+      div.className = 'custom-field-row d-flex gap-2 align-items-center';
+
+      div.innerHTML = `
+        <input type="text" placeholder="Key" class="form-control form-control-sm" onchange="updateCustomField(${inputIdx}, ${cfIdx}, 'key', this.value)" />
+        <input type="text" placeholder="Value" class="form-control form-control-sm" onchange="updateCustomField(${inputIdx}, ${cfIdx}, 'value', this.value)" />
+        <button type="button" class="btn btn-sm btn-danger" onclick="removeCustomField(${inputIdx}, ${cfIdx}, this)">×</button>
+      `;
+
+      container.appendChild(div);
+      inputs[inputIdx].customFields.push({ key: '', value: '' });
+    }
+
+    function updateCustomField(inputIdx, cfIdx, key, value) {
+      inputs[inputIdx].customFields[cfIdx][key] = value.trim();
+    }
+
+    function removeCustomField(inputIdx, cfIdx, btn) {
+      btn.parentElement.remove();
+      inputs[inputIdx].customFields.splice(cfIdx, 1);
+      // Re-index keys and onchange handlers for remaining fields (optional)
+    }
+
+    // Props config UI
+    function addProp() {
+      const stype = prompt("Enter Sourcetype for Prop:");
+      if (!stype) return;
+
+      if (!propsConfig[stype]) propsConfig[stype] = {};
+
+      const container = document.getElementById('propsContainer');
+
+      const div = document.createElement('div');
+      div.className = 'mb-3 border p-2 rounded';
+      div.dataset.stype = stype;
+
+      div.innerHTML = `<h5>${stype}</h5>`;
+
+      // Add field inputs for prop keys/values
+      const addFieldBtn = document.createElement('button');
+      addFieldBtn.type = 'button';
+      addFieldBtn.className = 'btn btn-outline-secondary btn-sm mb-2';
+      addFieldBtn.textContent = '+ Add Field';
+      addFieldBtn.onclick = () => {
+        const key = prompt("Enter Prop key:");
+        if (!key) return;
+        const val = prompt("Enter Prop value:");
+        if (val === null) return;
+        propsConfig[stype][key] = val;
+        renderProps();
+      };
+
+      div.appendChild(addFieldBtn);
+      container.appendChild(div);
+      renderProps();
+    }
+
+    function renderProps() {
+      const container = document.getElementById('propsContainer');
+      container.innerHTML = '';
+      for (const stype in propsConfig) {
+        const div = document.createElement('div');
+        div.className = 'mb-3 border p-2 rounded';
+        div.dataset.stype = stype;
+
+        let html = `<h5>${stype}</h5>`;
+        for (const key in propsConfig[stype]) {
+          html += `
+            <div class="d-flex gap-2 align-items-center mb-1">
+              <strong>${key}</strong>: 
+              <input type="text" class="form-control form-control-sm" value="${propsConfig[stype][key]}" onchange="updateProp('${stype}', '${key}', this.value)" />
+              <button type="button" class="btn btn-sm btn-danger" onclick="removeProp('${stype}', '${key}')">×</button>
+            </div>
+          `;
+        }
+        html += `<button type="button" class="btn btn-outline-secondary btn-sm" onclick="addPropField('${stype}')">+ Add Field</button>`;
+        div.innerHTML = html;
+        container.appendChild(div);
+      }
+    }
+
+    function addPropField(stype) {
+      const key = prompt("Enter Prop key:");
+      if (!key) return;
+      const val = prompt("Enter Prop value:");
+      if (val === null) return;
+      propsConfig[stype][key] = val;
+      renderProps();
+    }
+
+    function updateProp(stype, key, val) {
+      propsConfig[stype][key] = val;
+    }
+
+    function removeProp(stype, key) {
+      delete propsConfig[stype][key];
+      if (Object.keys(propsConfig[stype]).length === 0) {
+        delete propsConfig[stype];
+      }
+      renderProps();
+    }
+
+    // Transforms config UI (similar to props)
+    function addTransform() {
+      const tname = prompt("Enter Transform Name:");
+      if (!tname) return;
+
+      if (!transformsConfig[tname]) transformsConfig[tname] = {};
+
+      const container = document.getElementById('transformsContainer');
+
+      const div = document.createElement('div');
+      div.className = 'mb-3 border p-2 rounded';
+      div.dataset.tname = tname;
+
+      div.innerHTML = `<h5>${tname}</h5>`;
+
+      const addFieldBtn = document.createElement('button');
+      addFieldBtn.type = 'button';
+      addFieldBtn.className = 'btn btn-outline-secondary btn-sm mb-2';
+      addFieldBtn.textContent = '+ Add Field';
+      addFieldBtn.onclick = () => {
+        const key = prompt("Enter Transform key (e.g. REGEX, FORMAT, DEST_KEY):");
+        if (!key) return;
+        const val = prompt("Enter Transform value:");
+        if (val === null) return;
+        transformsConfig[tname][key] = val;
+        renderTransforms();
+      };
+
+      div.appendChild(addFieldBtn);
+      container.appendChild(div);
+      renderTransforms();
+    }
+
+    function renderTransforms() {
+      const container = document.getElementById('transformsContainer');
+      container.innerHTML = '';
+      for (const tname in transformsConfig) {
+        const div = document.createElement('div');
+        div.className = 'mb-3 border p-2 rounded';
+        div.dataset.tname = tname;
+
+        let html = `<h5>${tname}</h5>`;
+        for (const key in transformsConfig[tname]) {
+          html += `
+            <div class="d-flex gap-2 align-items-center mb-1">
+              <strong>${key}</strong>: 
+              <input type="text" class="form-control form-control-sm" value="${transformsConfig[tname][key]}" onchange="updateTransform('${tname}', '${key}', this.value)" />
+              <button type="button" class="btn btn-sm btn-danger" onclick="removeTransform('${tname}', '${key}')">×</button>
+            </div>
+          `;
+        }
+        html += `<button type="button" class="btn btn-outline-secondary btn-sm" onclick="addTransformField('${tname}')">+ Add Field</button>`;
+        div.innerHTML = html;
+        container.appendChild(div);
+      }
+    }
+
+    function addTransformField(tname) {
+      const key = prompt("Enter Transform key:");
+      if (!key) return;
+      const val = prompt("Enter Transform value:");
+      if (val === null) return;
+      transformsConfig[tname][key] = val;
+      renderTransforms();
+    }
+
+    function updateTransform(tname, key, val) {
+      transformsConfig[tname][key] = val;
+    }
+
+    function removeTransform(tname, key) {
+      delete transformsConfig[tname][key];
+      if (Object.keys(transformsConfig[tname]).length === 0) {
+        delete transformsConfig[tname];
+      }
+      renderTransforms();
+    }
+
+    // Your createApp function as you provided
+    async function createApp() {
+      const appName = document.getElementById('appName').value.trim();
+      if (!appName) {
+        alert('App Name is required');
+        return;
+      }
+
+      for (const inp of inputs) {
+        if (!inp.filePath || !inp.sourcetype) {
+          alert('Each input must have a File Path and Sourcetype.');
+          return;
+        }
+        for (const cf of inp.customFields) {
+          if (!cf.key) {
+            alert('Custom field keys cannot be empty.');
+            return;
+          }
+        }
+      }
+
+      const props = {};
+      for (const [stype, conf] of Object.entries(propsConfig)) {
+        props[stype] = {};
+        for (const key in conf) {
+          if (conf[key]) props[stype][key] = conf[key];
+        }
+      }
+
+      const transforms = {};
+      for (const [name, conf] of Object.entries(transformsConfig)) {
+        transforms[name] = {};
+        if (conf.REGEX) transforms[name].REGEX = conf.REGEX;
+        if (conf.FORMAT) transforms[name].FORMAT = conf.FORMAT;
+        if (conf.DEST_KEY) transforms[name].DEST_KEY = conf.DEST_KEY;
+      }
+
+      const payload = {
+        app_name: appName,
+        inputs: inputs,
+        props: props,
+        transforms: transforms
+      };
+
+      try {
+        const res = await fetch('/create_app', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          alert(result.message);
+         window.location.href = `/browse_files/${app_id}/default`;
+
+        } else {
+          alert("Error: " + result.error);
+        }
+      } catch (err) {
+        alert("Request failed: " + err.message);
+      }
+    }
+  </script>
+</body>
+</html>

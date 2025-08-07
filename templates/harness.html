@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Harness Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+        }
+
+        header {
+            background-color: #2d3e50;
+            color: white;
+            padding: 20px 40px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #2d3e50;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #2d3e50;
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Harness Dashboard</h1>
+    <p>Automate, Deploy, and Monitor with Ease</p>
+</header>
+
+<div class="container">
+    <div class="card-grid">
+        <div class="card">
+            <h3>Start a easgh Deployment</h3>
+            <p>Trigger a pipeline or start a new build using Harness pipeline integrations.</p>
+        </div>
+        <div class="card">
+            <h3>Monitor Pipelines</h3>
+            <p>Visualize current builds, logs, and execution statuses in real-time.</p>
+        </div>
+        <div class="card">
+            <h3>Manage Services</h3>
+            <p>View and update deployed services, environments, and configurations.</p>
+        </div>
+        <div class="card">
+            <h3>Settings</h3>
+            <p>Manage API keys, integrations, and user permissions securely.</p>
+        </div>
+    </div>
+</div>
+
+<footer>
+    &copy; 2025 Harness Tool | Built for DevOps Automation
+</footer>
+
+</body>
+</html>

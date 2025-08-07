@@ -1,0 +1,930 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Splunk Status</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Splunk Server Status</h2>
+
+    <div id="splunkStatus" class="alert d-none text-center" role="alert">
+        
+    </div>
+
+    <div class="text-center mt-3">
+        <button class="btn btn-primary" onclick="fetchSplunkStatus()">
+            <i class="bi bi-arrow-clockwise"></i> Refresh Status
+        </button>
+        <a href="/" class="btn btn-secondary ms-2">Back to Dashboard</a>
+    </div>
+</div>
+
+<script>
+    function fetchSplunkStatus() {
+        fetch('/splunk_status')
+            .then(res => res.json())
+            .then(data => {
+                const statusDiv = document.getElementById('splunkStatus');
+                statusDiv.textContent = data.message;
+                statusDiv.className = `alert text-center alert-${data.status === 'success' ? 'success' : 'danger'}`;
+                statusDiv.classList.remove('d-none');
+            })
+            .catch(err => {
+                const statusDiv = document.getElementById('splunkStatus');
+                statusDiv.textContent = 'Error fetching Splunk status: ' + err;
+                statusDiv.className = 'alert alert-danger text-center';
+                statusDiv.classList.remove('d-none');
+            });
+    }
+
+    // Load status on page load
+    window.addEventListener('DOMContentLoaded', fetchSplunkStatus);
+</script>
+
+</body>
+</html>
+
+
+ -->
+
+
+
+
+ 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Splunk Monitoring Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <style>
+        .dashboard-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .status-up {
+            background-color: #28a745;
+        }
+        .status-down {
+            background-color: #dc3545;
+        }
+        .xml-viewer, .log-viewer {
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .log-entry {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .log-entry:hover {
+            background-color: #f0f0f0;
+        }
+        .nav-tabs .nav-link.active {
+            font-weight: bold;
+        }
+        .search-results {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="bi bi-graph-up"></i> Splunk Monitoring Dashboard
+        </h2>
+        <div>
+            <button class="btn btn-outline-primary" onclick="fetchAllData()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh All
+            </button>
+            <button class="btn btn-outline-secondary ms-2" onclick="window.location.href='/'">
+                <i class="bi bi-house"></i> Home
+            </button>
+        </div>
+    </div>
+
+    <!-- Status Card -->
+    <div class="card mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-heart-pulse"></i> Splunk Server Status</h5>
+            <button class="btn btn-sm btn-outline-primary" onclick="fetchSplunkStatus()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+        </div>
+        <div class="card-body">
+            <div id="splunkStatus" class="d-flex align-items-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <span class="ms-2">Checking Splunk status...</span>
+            </div>
+            <div class="mt-3 row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6><i class="bi bi-pc-display"></i> Connection Info</h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Host:</span>
+                                    <span class="fw-bold">127.0.0.1</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Port:</span>
+                                    <span class="fw-bold">8000</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>User:</span>
+                                    <span class="fw-bold">MTL1013</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6><i class="bi bi-speedometer2"></i> Quick Actions</h6>
+                            <div class="d-grid gap-2">
+                                <a href="http://127.0.0.1:8000" target="_blank" class="btn btn-outline-primary">
+                                    <i class="bi bi-box-arrow-up-right"></i> Open Splunk Web
+                                </a>
+                                <!-- <button class="btn btn-outline-success" onclick="fetchDashboards()">
+                                    <i class="bi bi-collection"></i> Reload Dashboards
+                                </button> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Tabs -->
+    <ul class="nav nav-tabs mb-4" id="splunkTabs" role="tablist">
+        <!-- <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="dashboards-tab" data-bs-toggle="tab" data-bs-target="#dashboards" type="button" role="tab">
+                <i class="bi bi-grid"></i> Dashboards
+            </button>
+        </li> -->
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="search-tab" data-bs-toggle="tab" data-bs-target="#search" type="button" role="tab">
+                <i class="bi bi-search"></i> Search
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button" role="tab">
+                <i class="bi bi-journal-text"></i> Recent Logs
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab">
+                <i class="bi bi-gear"></i> Configuration
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="splunkTabContent">
+        <!-- Dashboards Tab -->
+        <div class="tab-pane fade show active" id="dashboards" role="tabpanel">
+            <div class="card">
+                <!-- <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-collection"></i> Available Dashboards</h5>
+                    <button class="btn btn-sm btn-outline-primary" onclick="fetchDashboards()">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                </div> -->
+                <div class="card-body">
+                    <div id="dashboardsLoading" class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading dashboards...</p>
+                    </div>
+                    <div id="dashboardsContainer" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 d-none">
+                        <!-- Dashboards will be loaded here -->
+                    </div>
+                    <div id="noDashboards" class="text-center py-4 d-none">
+                        <i class="bi bi-exclamation-circle fs-1 text-muted"></i>
+                        <!-- <p class="mt-2">No dashboards found or unable to connect to Splunk.</p> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Tab -->
+        <div class="tab-pane fade" id="search" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5><i class="bi bi-search"></i> Splunk Search</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="searchIndex" class="form-label">Index</label>
+                            <select class="form-select" id="searchIndex">
+                                <option value="*">All Indexes</option>
+                                <!-- Indexes will be loaded here -->
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label for="searchQuery" class="form-label">Search Query</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="searchQuery" placeholder="Enter search terms...">
+                                <button class="btn btn-primary" type="button" onclick="executeSearch()">
+                                    <i class="bi bi-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="realtimeSearch">
+                            <label class="form-check-label" for="realtimeSearch">Realtime Search</label>
+                        </div>
+                    </div>
+                    <div id="searchResults" class="search-results">
+                        <div class="text-center text-muted py-5">
+                            <i class="bi bi-search fs-1"></i>
+                            <p>Enter a search query to begin</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Logs Tab -->
+        <div class="tab-pane fade" id="logs" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-journal-text"></i> Recent Logs</h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary" onclick="fetchRecentLogs()">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="logIndex" class="form-label">Index</label>
+                            <select class="form-select" id="logIndex">
+                                <option value="*">All Indexes</option>
+                                <!-- Indexes will be loaded here -->
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="logCount" class="form-label">Number of Logs</label>
+                            <select class="form-select" id="logCount">
+                                <option value="10">10</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="500">500</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label for="logFilter" class="form-label">Filter</label>
+                            <input type="text" class="form-control" id="logFilter" placeholder="Filter logs...">
+                        </div>
+                    </div>
+                    <div id="logsLoading" class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading recent logs...</p>
+                    </div>
+                    <div id="logsContainer" class="log-viewer d-none">
+                        <!-- Logs will be loaded here -->
+                    </div>
+                    <div id="noLogs" class="text-center py-4 d-none">
+                        <i class="bi bi-exclamation-circle fs-1 text-muted"></i>
+                        <p class="mt-2">No logs found or unable to connect to Splunk.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Tab -->
+        <div class="tab-pane fade" id="config" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5><i class="bi bi-gear"></i> Splunk Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-3" id="configTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="apps-tab" data-bs-toggle="tab" data-bs-target="#apps" type="button" role="tab">
+                                <i class="bi bi-collection"></i> Apps
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="indexes-tab" data-bs-toggle="tab" data-bs-target="#indexes" type="button" role="tab">
+                                <i class="bi bi-database"></i> Indexes
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
+                                <i class="bi bi-people"></i> Users
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="configTabContent">
+                        <div class="tab-pane fade show active" id="apps" role="tabpanel">
+                            <div id="appsLoading" class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading apps...</p>
+                            </div>
+                            <div id="appsContainer" class="d-none">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Version</th>
+                                            <th>Author</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="appsTableBody">
+                                        <!-- Apps will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="indexes" role="tabpanel">
+                            <div id="indexesLoading" class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading indexes...</p>
+                            </div>
+                            <div id="indexesContainer" class="d-none">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Total Events</th>
+                                            <th>Size</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="indexesTableBody">
+                                        <!-- Indexes will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="users" role="tabpanel">
+                            <div id="usersLoading" class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading users...</p>
+                            </div>
+                            <div id="usersContainer" class="d-none">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Full Name</th>
+                                            <th>Email</th>
+                                            <th>Roles</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody">
+                                        <!-- Users will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Details Modal -->
+    <div class="modal fade" id="dashboardModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dashboardModalTitle">Dashboard Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="dashboardDetailsLoading" class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading dashboard details...</p>
+                    </div>
+                    <div id="dashboardDetailsContent" class="d-none">
+                        <h6 id="dashboardName" class="mb-3"></h6>
+                        <p id="dashboardDescription" class="text-muted"></p>
+                        <div class="mb-3">
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewXML()">
+                                <i class="bi bi-code-square"></i> View XML Definition
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyDashboardName()">
+                                <i class="bi bi-clipboard"></i> Copy Name
+                            </button>
+                        </div>
+                        <div id="xmlViewer" class="xml-viewer d-none"></div>
+                    </div>
+                    <div id="dashboardDetailsError" class="text-center py-4 d-none">
+                        <i class="bi bi-exclamation-circle fs-1 text-danger"></i>
+                        <p class="mt-2" id="dashboardErrorText">Error loading dashboard details.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let currentDashboardName = '';
+    const modal = new bootstrap.Modal(document.getElementById('dashboardModal'));
+    let realtimeSearchInterval = null;
+
+    // Load all data on page load
+    window.addEventListener('DOMContentLoaded', function() {
+        fetchAllData();
+        fetchIndexes();
+    });
+
+    function fetchAllData() {
+        fetchSplunkStatus();
+        fetchDashboards();
+        fetchRecentLogs();
+        fetchApps();
+        fetchIndexes();
+        fetchUsers();
+    }
+
+    function fetchSplunkStatus() {
+        const statusDiv = document.getElementById('splunkStatus');
+        statusDiv.innerHTML = `
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <span class="ms-2">Checking Splunk status...</span>
+        `;
+
+        fetch('/splunk_status')
+            .then(res => res.json())
+            .then(data => {
+                const statusClass = data.status === 'success' ? 'status-up' : 'status-down';
+                const statusText = data.status === 'success' ? 'Operational' : 'Down';
+                const alertClass = data.status === 'success' ? 'text-success' : 'text-danger';
+                
+                statusDiv.innerHTML = `
+                    <span class="${statusClass} status-indicator"></span>
+                    <span class="${alertClass} fw-bold">${statusText}</span>
+                    <span class="ms-2">${data.message}</span>
+                `;
+            })
+            .catch(err => {
+                statusDiv.innerHTML = `
+                    <span class="status-indicator status-down"></span>
+                    <span class="text-danger fw-bold">Error</span>
+                    <span class="ms-2">Error fetching Splunk status: ${err}</span>
+                `;
+            });
+    }
+
+    function fetchDashboards() {
+        const container = document.getElementById('dashboardsContainer');
+        const loading = document.getElementById('dashboardsLoading');
+        const noDashboards = document.getElementById('noDashboards');
+        
+        container.classList.add('d-none');
+        noDashboards.classList.add('d-none');
+        loading.classList.remove('d-none');
+        
+        fetch('/splunk_dashboards')
+            .then(res => res.json())
+            .then(data => {
+                loading.classList.add('d-none');
+                
+                if (data.status === 'error') {
+                    noDashboards.classList.remove('d-none');
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                if (data.length === 0) {
+                    noDashboards.classList.remove('d-none');
+                    return;
+                }
+                
+                data.forEach(dashboard => {
+                    const card = document.createElement('div');
+                    card.className = 'col';
+                    card.innerHTML = `
+                        <div class="card h-100 dashboard-card" onclick="openDashboardModal('${dashboard.name}')">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="bi bi-grid"></i> ${dashboard.label || dashboard.name}
+                                </h5>
+                                <p class="card-text text-muted">${dashboard.description || 'No description available.'}</p>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <small class="text-muted">ID: ${dashboard.name}</small>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+                
+                container.classList.remove('d-none');
+            })
+            .catch(err => {
+                loading.classList.add('d-none');
+                noDashboards.classList.remove('d-none');
+                console.error('Error fetching dashboards:', err);
+            });
+    }
+
+    function fetchIndexes() {
+        fetch('/splunk_indexes')
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'error') {
+                    console.error('Error fetching indexes:', data.message);
+                    return;
+                }
+                
+                const searchIndexSelect = document.getElementById('searchIndex');
+                const logIndexSelect = document.getElementById('logIndex');
+                
+                // Clear existing options except the first one
+                while (searchIndexSelect.options.length > 1) {
+                    searchIndexSelect.remove(1);
+                }
+                while (logIndexSelect.options.length > 1) {
+                    logIndexSelect.remove(1);
+                }
+                
+                data.forEach(index => {
+                    const option = document.createElement('option');
+                    option.value = index.name;
+                    option.textContent = index.name;
+                    searchIndexSelect.appendChild(option.cloneNode(true));
+                    logIndexSelect.appendChild(option);
+                });
+            })
+            .catch(err => {
+                console.error('Error fetching indexes:', err);
+            });
+    }
+
+    function fetchRecentLogs() {
+        const logsContainer = document.getElementById('logsContainer');
+        const loading = document.getElementById('logsLoading');
+        const noLogs = document.getElementById('noLogs');
+        const index = document.getElementById('logIndex').value;
+        const count = document.getElementById('logCount').value;
+        
+        logsContainer.classList.add('d-none');
+        noLogs.classList.add('d-none');
+        loading.classList.remove('d-none');
+        
+        fetch(`/splunk_recent_logs?index=${index}&count=${count}`)
+            .then(res => res.json())
+            .then(data => {
+                loading.classList.add('d-none');
+                
+                if (data.status === 'error') {
+                    noLogs.classList.remove('d-none');
+                    return;
+                }
+                
+                logsContainer.innerHTML = '';
+                
+                if (data.length === 0) {
+                    noLogs.classList.remove('d-none');
+                    return;
+                }
+                
+                data.forEach(log => {
+                    const logEntry = document.createElement('div');
+                    logEntry.className = 'log-entry';
+                    logEntry.innerHTML = `
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">${new Date(log._time).toLocaleString()}</small>
+                            <small class="text-muted">${log.source || 'Unknown source'}</small>
+                        </div>
+                        <div class="mt-1">${log._raw || 'No log content'}</div>
+                    `;
+                    logsContainer.appendChild(logEntry);
+                });
+                
+                logsContainer.classList.remove('d-none');
+                setupLogFilter();
+            })
+            .catch(err => {
+                loading.classList.add('d-none');
+                noLogs.classList.remove('d-none');
+                console.error('Error fetching recent logs:', err);
+            });
+    }
+
+    function setupLogFilter() {
+        const filterInput = document.getElementById('logFilter');
+        const logEntries = document.querySelectorAll('.log-entry');
+        
+        filterInput.addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            
+            logEntries.forEach(entry => {
+                const text = entry.textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    entry.style.display = '';
+                    
+                    // Highlight matching text
+                    if (filter) {
+                        const rawText = entry.querySelector('div:nth-child(2)').textContent;
+                        const highlighted = rawText.replace(
+                            new RegExp(filter, 'gi'),
+                            match => `<span class="highlight">${match}</span>`
+                        );
+                        entry.querySelector('div:nth-child(2)').innerHTML = highlighted;
+                    }
+                } else {
+                    entry.style.display = 'none';
+                }
+            });
+        });
+    }
+
+    function executeSearch() {
+        const query = document.getElementById('searchQuery').value;
+        const index = document.getElementById('searchIndex').value;
+        const realtime = document.getElementById('realtimeSearch').checked;
+        const resultsDiv = document.getElementById('searchResults');
+        
+        if (!query) {
+            resultsDiv.innerHTML = `
+                <div class="alert alert-warning">
+                    Please enter a search query
+                </div>
+            `;
+            return;
+        }
+        
+        resultsDiv.innerHTML = `
+            <div class="text-center py-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Searching Splunk...</p>
+            </div>
+        `;
+        
+        // Clear any existing realtime search
+        if (realtimeSearchInterval) {
+            clearInterval(realtimeSearchInterval);
+            realtimeSearchInterval = null;
+        }
+        
+        performSearch(query, index, realtime);
+        
+        if (realtime) {
+            realtimeSearchInterval = setInterval(() => {
+                performSearch(query, index, realtime);
+            }, 5000);
+        }
+    }
+
+    function performSearch(query, index, realtime) {
+        const resultsDiv = document.getElementById('searchResults');
+        
+        fetch(`/splunk_search?query=${encodeURIComponent(query)}&index=${index}&realtime=${realtime}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'error') {
+                    resultsDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            Error executing search: ${data.message}
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (data.results.length === 0) {
+                    resultsDiv.innerHTML = `
+                        <div class="alert alert-info">
+                            No results found for your search
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = `
+                    <div class="alert alert-success">
+                        Found ${data.results.length} results (${realtime ? 'realtime' : 'historical'} search)
+                    </div>
+                    <div class="list-group">
+                `;
+                
+                data.results.forEach(result => {
+                    html += `
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">${new Date(result._time).toLocaleString()}</small>
+                                <small class="text-muted">${result.source || 'Unknown source'}</small>
+                            </div>
+                            <div class="mt-2">${result._raw || 'No content'}</div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+                resultsDiv.innerHTML = html;
+            })
+            .catch(err => {
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        Error executing search: ${err.message}
+                    </div>
+                `;
+            });
+    }
+
+    function fetchApps() {
+        const loading = document.getElementById('appsLoading');
+        const container = document.getElementById('appsContainer');
+        const tableBody = document.getElementById('appsTableBody');
+        
+        loading.classList.remove('d-none');
+        container.classList.add('d-none');
+        tableBody.innerHTML = '';
+        
+        fetch('/splunk_apps')
+            .then(res => res.json())
+            .then(data => {
+                loading.classList.add('d-none');
+                
+                if (data.status === 'error') {
+                    console.error('Error fetching apps:', data.message);
+                    return;
+                }
+                
+                data.forEach(app => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${app.name}</td>
+                        <td>${app.version}</td>
+                        <td>${app.author || 'N/A'}</td>
+                        <td>
+                            <span class="badge bg-${app.disabled ? 'danger' : 'success'}">
+                                ${app.disabled ? 'Disabled' : 'Enabled'}
+                            </span>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+                container.classList.remove('d-none');
+            })
+            .catch(err => {
+                loading.classList.add('d-none');
+                console.error('Error fetching apps:', err);
+            });
+    }
+
+    function fetchUsers() {
+        const loading = document.getElementById('usersLoading');
+        const container = document.getElementById('usersContainer');
+        const tableBody = document.getElementById('usersTableBody');
+        
+        loading.classList.remove('d-none');
+        container.classList.add('d-none');
+        tableBody.innerHTML = '';
+        
+        fetch('/splunk_users')
+            .then(res => res.json())
+            .then(data => {
+                loading.classList.add('d-none');
+                
+                if (data.status === 'error') {
+                    console.error('Error fetching users:', data.message);
+                    return;
+                }
+                
+                data.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.name}</td>
+                        <td>${user.realName || 'N/A'}</td>
+                        <td>${user.email || 'N/A'}</td>
+                        <td>${user.roles ? user.roles.join(', ') : 'N/A'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+                container.classList.remove('d-none');
+            })
+            .catch(err => {
+                loading.classList.add('d-none');
+                console.error('Error fetching users:', err);
+            });
+    }
+
+    function openDashboardModal(dashboardName) {
+        currentDashboardName = dashboardName;
+        const modalTitle = document.getElementById('dashboardModalTitle');
+        const loading = document.getElementById('dashboardDetailsLoading');
+        const content = document.getElementById('dashboardDetailsContent');
+        const error = document.getElementById('dashboardDetailsError');
+        const xmlViewer = document.getElementById('xmlViewer');
+        
+        modalTitle.textContent = `Loading ${dashboardName}...`;
+        loading.classList.remove('d-none');
+        content.classList.add('d-none');
+        error.classList.add('d-none');
+        xmlViewer.classList.add('d-none');
+        
+        modal.show();
+        
+        fetch(`/splunk_search/${dashboardName}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'error') {
+                    throw new Error(data.message);
+                }
+                
+                modalTitle.textContent = data.label || data.name;
+                document.getElementById('dashboardName').textContent = data.name;
+                document.getElementById('dashboardDescription').textContent = 
+                    data.description || 'No description available.';
+                
+                loading.classList.add('d-none');
+                content.classList.remove('d-none');
+                xmlViewer.textContent = data.content.xml;
+            })
+            .catch(err => {
+                loading.classList.add('d-none');
+                error.classList.remove('d-none');
+                document.getElementById('dashboardErrorText').textContent = 
+                    `Error loading dashboard: ${err.message}`;
+                console.error('Error loading dashboard:', err);
+            });
+    }
+
+    function viewXML() {
+        const xmlViewer = document.getElementById('xmlViewer');
+        xmlViewer.classList.toggle('d-none');
+    }
+
+    function copyDashboardName() {
+        navigator.clipboard.writeText(currentDashboardName)
+            .then(() => {
+                alert('Dashboard name copied to clipboard!');
+            })
+            .catch(err => {
+                console.error('Failed to copy:', err);
+            });
+    }
+
+    // Clean up intervals when leaving the page
+    window.addEventListener('beforeunload', function() {
+        if (realtimeSearchInterval) {
+            clearInterval(realtimeSearchInterval);
+        }
+    });
+</script>
+</body>
+</html>

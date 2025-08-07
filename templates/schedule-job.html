@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule a Job</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS -->
+</head>
+<body>
+    <div class="container">
+        <h3>Schedule a Job</h3>
+        <form id="jobForm">
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="email" required><br><br>
+            
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" name="name" required><br><br>
+
+            <label for="repoLink">Repository Link:</label><br>
+            <input type="text" id="repoLink" name="repoLink" required><br><br>
+
+            <label for="scheduleTime">Schedule Time:</label><br>
+            <input type="datetime-local" id="scheduleTime" name="scheduleTime" required><br><br>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        // Handle form submission
+        document.getElementById('jobForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+            const repoLink = document.getElementById('repoLink').value;
+            const scheduleTime = document.getElementById('scheduleTime').value;
+
+            // Process the form data
+            console.log({
+                email: email,
+                name: name,
+                repoLink: repoLink,
+                scheduleTime: scheduleTime
+            });
+
+            // Optionally, after submission, display a success message
+            alert("Job scheduled successfully!");
+
+            // Optionally, redirect to the editor page or another page after form submission
+            window.location.href = 'main'; // Replace with the actual URL to return to the editor page
+        });
+    </script>
+</body>
+</html>

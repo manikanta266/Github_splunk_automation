@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Error</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .error-container {
+            border: 1px solid #f5c6cb;
+            background-color: #f8d7da;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+        h1 {
+            margin-top: 0;
+        }
+        pre {
+            background: #f1b0b7;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h1>Error</h1>
+        {% if error %}
+            <pre>{{ error }}</pre>
+        {% else %}
+            <p>An unknown error occurred.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Splunk & Jenkins Connection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: #218838;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #28a745;
+        }
+
+        .error {
+            color: #dc3545;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h3 {
+            font-size: 20px;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .alert {
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Test Splunk & Jenkins Connection</h1>
+
+        <form method="POST">
+            <!-- Splunk Settings Section -->
+            <div class="section">
+                <h3>Splunk Settings</h3>
+                <div class="form-group">
+                    <label for="splunk_host">Splunk Host:</label>
+                    <input type="text" id="splunk_host" name="splunk_host" placeholder="Enter Splunk Host (e.g., 127.0.0.1)" required>
+                </div>
+                <div class="form-group">
+                    <label for="splunk_port">Splunk Port:</label>
+                    <input type="text" id="splunk_port" name="splunk_port" placeholder="Enter Splunk port number" required>
+                </div>
+                <div class="form-group">
+                    <label for="splunk_user">Splunk Username:</label>
+                    <input type="text" id="splunk_user" name="splunk_user" placeholder="Enter Splunk Username" required>
+                </div>
+                <div class="form-group">
+                    <label for="splunk_pass">Splunk Password:</label>
+                    <input type="password" id="splunk_pass" name="splunk_pass" placeholder="Enter Splunk Password" required>
+                </div>
+            </div>
+
+            <!-- Jenkins Settings Section -->
+            <div class="section">
+                <h3>Jenkins Settings</h3>
+                <div class="form-group">
+                    <label for="jenkins_url">Jenkins URL:</label>
+                    <input type="text" id="jenkins_url" name="jenkins_url" placeholder="Enter Jenkins URL (e.g., http://localhost:8080)" required>
+                </div>
+                <div class="form-group">
+                    <label for="jenkins_username">Jenkins Username:</label>
+                    <input type="text" id="jenkins_username" name="jenkins_username" placeholder="Enter Jenkins Username" required>
+                </div>
+                <div class="form-group">
+                    <label for="jenkins_api_token">Jenkins API Token:</label>
+                    <input type="text" id="jenkins_api_token" name="jenkins_api_token" placeholder="Enter Jenkins API Token" required>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn">Test Connections</button>
+        </form>
+
+        <!-- Display Results -->
+        <div class="result">
+            {% if result_message %}
+                <div class="alert {% if result_style == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                    <p class="{{ result_style }}">{{ result_message }}</p>
+                </div>
+            {% endif %}
+            {% if jenkins_result_message %}
+                <div class="alert {% if jenkins_result_style == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                    <p class="{{ jenkins_result_style }}">{{ jenkins_result_message }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>

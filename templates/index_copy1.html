@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dynamic Splunk App Builder</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+ <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+  body {
+    background: linear-gradient(135deg, #e3f2fd, #f8fafc);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: #2c3e50;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  h1 {
+    font-weight: 700;
+    font-size: 2.75rem;
+    color: #1976d2;
+    margin-bottom: 1rem;
+    text-align: center;
+    letter-spacing: -0.02em;
+    text-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+  }
+
+  .block {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgb(25 118 210 / 0.12);
+    padding: 20px 25px;
+    margin-bottom: 25px;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+  }
+  .block:hover {
+    box-shadow: 0 8px 24px rgb(25 118 210 / 0.25);
+    transform: translateY(-3px);
+  }
+
+  .section-header {
+    font-weight: 700;
+    color: #1565c0;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    border-bottom: 3px solid #42a5f5;
+    padding-bottom: 8px;
+  }
+
+  label {
+    font-weight: 600;
+    color: #1e88e5;
+  }
+
+  input.form-control,
+  textarea.form-control {
+    border-radius: 8px;
+    border: 1.5px solid #90caf9;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    padding: 10px 12px;
+    font-family: 'Source Code Pro', monospace, monospace;
+  }
+  input.form-control:focus,
+  textarea.form-control:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 6px 2px #1976d2aa;
+  }
+
+  button.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .btn-outline-primary {
+    border-color: #1976d2;
+    color: #1976d2;
+  }
+  .btn-outline-primary:hover {
+    background-color: #1976d2;
+    color: white;
+    box-shadow: 0 4px 12px rgb(25 118 210 / 0.4);
+  }
+
+  .btn-danger {
+    background-color: #e53935;
+    border-color: #e53935;
+    color: white;
+    box-shadow: 0 2px 8px rgb(229 57 53 / 0.5);
+  }
+  .btn-danger:hover {
+    background-color: #b71c1c;
+    border-color: #b71c1c;
+    box-shadow: 0 4px 16px rgb(183 28 28 / 0.75);
+    color: white;
+  }
+
+  .btn-success {
+    background-color: #43a047;
+    border-color: #43a047;
+    color: white;
+    box-shadow: 0 2px 8px rgb(67 160 71 / 0.5);
+  }
+  .btn-success:hover {
+    background-color: #2e7d32;
+    border-color: #2e7d32;
+    box-shadow: 0 4px 16px rgb(46 125 50 / 0.75);
+    color: white;
+  }
+
+  .custom-fields-row {
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .custom-field-key {
+    max-width: 140px;
+  }
+  .custom-field-value {
+    flex-grow: 1;
+  }
+
+  pre#output,
+  pre#propsOnlyOutput {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.9rem;
+    max-height: 350px;
+    overflow-y: auto;
+    border-radius: 10px;
+    border: 1.5px solid #90caf9;
+    background: #f0f7ff;
+    padding: 20px;
+    user-select: all;
+    box-shadow: inset 0 0 8px #cbe3ff;
+  }
+
+  /* Scrollbar styling for output */
+  pre#output::-webkit-scrollbar,
+  pre#propsOnlyOutput::-webkit-scrollbar {
+    width: 8px;
+  }
+  pre#output::-webkit-scrollbar-thumb,
+  pre#propsOnlyOutput::-webkit-scrollbar-thumb {
+    background-color: #1976d2;
+    border-radius: 20px;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 600px) {
+    .block {
+      padding: 15px 18px;
+    }
+    h1 {
+      font-size: 2rem;
+    }
+  }
+
+
+
+      body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f2f5;
+      padding: 20px 30px;
+      color: #333;
+      max-width: 900px;
+      margin: auto;
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-weight: 700;
+      color: #222;
+      user-select: none;
+    }
+    .block {
+      background: white;
+      padding: 16px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
+      margin-bottom: 22px;
+      transition: box-shadow 0.2s ease;
+      user-select: none;
+    }
+    .block:hover {
+      box-shadow: 0 6px 14px rgb(0 0 0 / 0.15);
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: background-color 0.25s ease;
+      user-select: none;
+      color: white;
+      background-color: #dc3545;
+      box-shadow: 0 2px 6px rgb(220 53 69 / 0.5);
+    }
+    button:hover {
+      background-color: #a71d2a;
+      box-shadow: 0 3px 8px rgb(167 29 42 / 0.7);
+    }
+    #clearAllBtn {
+      margin-bottom: 25px;
+      background-color: #007bff;
+      box-shadow: 0 2px 6px rgb(0 123 255 / 0.4);
+    }
+    #clearAllBtn:hover {
+      background-color: #0056b3;
+      box-shadow: 0 3px 8px rgb(0 86 179 / 0.6);
+    }
+    #logDisplay {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      height: 340px;
+      overflow-y: auto;
+      padding: 14px 16px;
+      font-family: Consolas, 'Courier New', monospace;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      border: 1px solid #444;
+      user-select: text;
+      line-height: 1.4;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: 700;
+      margin-right: 8px;
+      user-select: none;
+    }
+    select {
+      margin-bottom: 25px;
+      padding: 8px 12px;
+      font-size: 15px;
+      border-radius: 6px;
+      border: 1.5px solid #ccc;
+      transition: border-color 0.3s ease;
+      user-select: none;
+      min-width: 160px;
+    }
+    select:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgb(0 123 255 / 0.5);
+    }
+    input[type="file"] {
+      margin-bottom: 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+    textarea.form-control {
+      width: 100%;
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1.5px solid #ccc;
+      padding: 8px 10px;
+      resize: vertical;
+      transition: border-color 0.3s ease;
+    }
+    textarea.form-control:focus {
+      border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 5px rgb(0 123 255 / 0.5);
+    }
+</style>
+
+</head>
+<body class="container py-4">
+
+  <h1 class="mb-4 text-primary">Dynamic Splunk App Builder</h1>
+
+  <div class="mb-4">
+    <div class="mb-3 position-relative" style="width: 100%;">
+      <label for="appName" class="form-label fw-semibold">App Name</label>
+      <input type="text" id="appName" class="form-control" placeholder="Enter app name" autocomplete="off" />
+      <div id="suggestionsWrapper" class="mt-2" style="display: none;">
+        <strong>Suggestions names:</strong>
+        <div id="suggestionsRow" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px;"></div>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="indexName" class="form-label fw-semibold">Index Name</label>
+      <input type="text" id="indexName" class="form-control" placeholder="Enter index name" autocomplete="off" />
+    </div>
+  </div>
+
+  <div>
+    <h3 class="section-header">Inputs config</h3>
+    <div id="inputsContainer"></div>
+    <button class="btn btn-outline-primary mb-3" onclick="addInput()">+ Add Input</button>
+  </div>
+
+<div>
+  <h3 class="section-header">Props Config per Sourcetype</h3>
+  <div id="propsContainer"></div>
+  <!-- <div id="propsButtonWrapper" class="mt-3 d-none">
+    <button class="btn btn-success" onclick="showPropsOnly()">✅ Give me the props.conf</button>
+  </div> -->
+</div>
+<pre id="propsOnlyOutput" class="mt-3 p-3 bg-white border rounded d-none"></pre>
+
+
+  <div>
+    <h3 class="section-header">Transforms Config</h3>
+    <div id="appContainer"></div>
+  </div>
+
+  <button class="btn btn-success btn-lg mt-4" onclick="createApp()">Create App</button>
+
+  <!-- ✅ Show full config output -->
+  <pre id="output" class="mt-4 bg-light p-3"></pre>
+
+<script>
+  let inputs = [];
+  let inputId = 1;
+  let propsConfig = {};
+  let transformsConfig = {};
+
+  function addInput() {
+    inputs.push({
+      id: inputId++,
+      filePath: '',
+      sourcetype: '',
+      index: '',
+      customFields: []
+    });
+    renderInputs();
+    updatePropsAndTransforms();
+  }
+
+  function renderInputs() {
+    const container = document.getElementById('inputsContainer');
+    container.innerHTML = '';
+
+    inputs.forEach(inp => {
+      const div = document.createElement('div');
+      div.className = 'block';
+      div.dataset.id = inp.id;
+
+      // Build custom fields HTML
+      let customFieldsHTML = '';
+      inp.customFields.forEach((f, idx) => {
+        customFieldsHTML += `
+          <div class="d-flex custom-fields-row">
+            <input type="text" class="form-control form-control-sm custom-field-key" placeholder="Key" data-id="${inp.id}" data-idx="${idx}" data-type="key" value="${f.key}" oninput="onCustomFieldChange(event)" />
+            <input type="text" class="form-control form-control-sm custom-field-value" placeholder="Value" data-id="${inp.id}" data-idx="${idx}" data-type="value" value="${f.value}" oninput="onCustomFieldChange(event)" />
+            <button class="btn btn-sm btn-danger" onclick="removeCustomField(${inp.id}, ${idx})" title="Remove field">&times;</button>
+          </div>
+        `;
+      });
+
+      div.innerHTML = `
+        <div class="row align-items-end mb-3">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">File Path</label>
+            <input type="text" class="form-control filePath" value="${inp.filePath}" data-id="${inp.id}" placeholder="e.g. /var/log/app.log" oninput="onInputChange(event)" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Sourcetype</label>
+            <input type="text" class="form-control sourcetype" value="${inp.sourcetype}" data-id="${inp.id}" placeholder="e.g. my_sourcetype" oninput="onInputChange(event)" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label fw-semibold">Index (optional)</label>
+            <input type="text" class="form-control index" value="${inp.index}" data-id="${inp.id}" placeholder="optional" oninput="onInputChange(event)" />
+          </div>
+          <div class="col-md-1 text-center">
+            <button class="btn btn-danger" onclick="removeInputConfirmed(${inp.id})" title="Delete input" ${inputs.length === 1 ? 'disabled' : ''}>&times;</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label fw-semibold">Custom Fields</label>
+          <div id="customFieldsContainer_${inp.id}">
+            ${customFieldsHTML || '<em class="text-muted">No custom fields added yet.</em>'}
+          </div>
+          <button class="btn btn-sm btn-outline-primary mt-2" onclick="addCustomField(${inp.id})">+ Add Custom Field</button>
+        </div>
+      `;
+
+      container.appendChild(div);
+    });
+  }
+
+  function removeInputConfirmed(id) {
+    if (inputs.length === 1) {
+      alert('At least one input is required.');
+      return;
+    }
+    if (confirm('Delete this input?')) {
+      removeInput(id);
+    }
+  }
+
+  function removeInput(id) {
+    inputs = inputs.filter(i => i.id !== id);
+    renderInputs();
+    updatePropsAndTransforms();
+  }
+
+  function onInputChange(event) {
+    const id = Number(event.target.dataset.id);
+    const input = inputs.find(i => i.id === id);
+    if (!input) return;
+
+    if (event.target.classList.contains('filePath')) input.filePath = event.target.value.trim();
+    else if (event.target.classList.contains('sourcetype')) input.sourcetype = event.target.value.trim();
+    else if (event.target.classList.contains('index')) input.index = event.target.value.trim();
+
+    updatePropsAndTransforms();
+  }
+
+  // Custom fields handlers
+  function addCustomField(inputId) {
+    const input = inputs.find(i => i.id === inputId);
+    if (!input) return;
+    input.customFields.push({ key: '', value: '' });
+    renderInputs();
+  }
+
+  function removeCustomField(inputId, idx) {
+    const input = inputs.find(i => i.id === inputId);
+    if (!input) return;
+    input.customFields.splice(idx, 1);
+    renderInputs();
+  }
+
+  function onCustomFieldChange(event) {
+    const inputId = Number(event.target.dataset.id);
+    const idx = Number(event.target.dataset.idx);
+    const type = event.target.dataset.type;
+    const input = inputs.find(i => i.id === inputId);
+    if (!input) return;
+
+    if (input.customFields[idx]) {
+      if (type === 'key') input.customFields[idx].key = event.target.value.trim();
+      else if (type === 'value') input.customFields[idx].value = event.target.value.trim();
+    }
+  }
+
+  function updatePropsAndTransforms() {
+    const uniqueSourcetypes = [...new Set(inputs.map(i => i.sourcetype).filter(Boolean))];
+
+    for (const stype in propsConfig) {
+      if (!uniqueSourcetypes.includes(stype)) delete propsConfig[stype];
+    }
+
+    uniqueSourcetypes.forEach(stype => {
+      if (!propsConfig[stype]) propsConfig[stype] = { TIME_FORMAT: '',DATETIME_CONFIG:'', LINE_BREAKER: '',
+      SHOULD_LINEMERGE: '',
+      TRUNCATE: '' };
+    });
+
+    renderProps();
+    updateTransformsFromProps();
+  }
+
+//   function renderProps() {
+//   const container = document.getElementById('propsContainer');
+//   container.innerHTML = '';
+
+//   Object.entries(propsConfig).forEach(([stype, conf]) => {
+//     const div = document.createElement('div');
+//     div.className = 'block';
+
+//     div.innerHTML = `
+//       <div style="display:flex; align-items:center; justify-content: space-between; margin-bottom: 8px;">
+//         <h5 style="margin:0;">${stype}</h5>
+//         <button type="button" title="Delete this source" style="background:none; border:none; color:red; font-size: 20px; cursor:pointer;" data-stype="${stype}" class="delete-prop-btn">❌</button>
+//       </div>
+
+//       <div class="row mb-2">
+//         <div class="mb-3">
+//           <label for="propsFileUpload_${stype}" class="form-label">Upload props.conf for ${stype}</label>
+//           <input type="file" id="propsFileUpload_${stype}" class="form-control" accept=".conf,.txt" />
+//         </div>
+
+//         <div class="col-md-4">
+//           <label class="form-label">TIME_FORMAT</label>
+//           <input type="text" class="form-control" data-stype="${stype}" data-prop="TIME_FORMAT" value="${conf.TIME_FORMAT}" oninput="onPropsChange(event)" placeholder="e.g. %Y-%m-%d %H:%M:%S" />
+//         </div>
+//         <div class="col-md-4">
+//           <label class="form-label">LINE_BREAKER</label>
+//           <input type="text" class="form-control" data-stype="${stype}" data-prop="LINE_BREAKER" value="${conf.LINE_BREAKER}" oninput="onPropsChange(event)" placeholder="e.g. ([\\r\\n]+)" />
+//         </div>
+//         <div class="col-md-4">
+//           <label class="form-label">REPORT</label>
+//           <input type="text" class="form-control" data-stype="${stype}" data-prop="REPORT" value="${conf.REPORT}" oninput="onPropsChange(event)" placeholder="e.g. set_null_rule" />
+//         </div>
+//       </div>
+//     `;
+
+//     container.appendChild(div);
+
+//     // Attach event listener for file upload input
+//     const fileInput = document.getElementById(`propsFileUpload_${stype}`);
+//     fileInput.addEventListener('change', async (event) => {
+//       const file = event.target.files[0];
+//       if (!file) return;
+
+//       const text = await file.text();
+//       const newConfig = parsePropsConf(text);
+//       if (newConfig[stype]) {
+//         propsConfig[stype] = { ...propsConfig[stype], ...newConfig[stype] };
+//         renderProps();
+//       } else {
+//         alert(`Uploaded file does not contain config for source type: ${stype}`);
+//       }
+//     });
+//   });
+
+//   // Add event listeners for delete buttons after all blocks appended
+//   document.querySelectorAll('.delete-prop-btn').forEach(btn => {
+//     btn.addEventListener('click', (e) => {
+//       const stypeToDelete = e.currentTarget.getAttribute('data-stype');
+//       if (stypeToDelete && confirm(`Delete the config for "${stypeToDelete}"?`)) {
+//         delete propsConfig[stypeToDelete];
+//         renderProps();
+//       }
+//     });
+//   });
+
+//   document.getElementById('propsButtonWrapper').classList.toggle('d-none', Object.keys(propsConfig).length === 0);
+// }
+
+
+
+
+
+
+
+
+function deletePropsStanza(stype) {
+  if (!propsConfig[stype]) return;
+  if (confirm(`Delete the entire props stanza "${stype}"?`)) {
+    delete propsConfig[stype];
+    updateTransformsFromProps();  // Remove related transforms too
+    renderProps();                // Re-render the props UI
+  }
+}
+
+
+
+function renderProps() {
+  const container = document.getElementById('propsContainer');
+  container.innerHTML = '';
+
+  const blockStyle = `
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    font-family: Arial, sans-serif;
+    color: #333;
+  `;
+
+  Object.entries(propsConfig).forEach(([stype, conf]) => {
+    const div = document.createElement('div');
+    div.setAttribute('style', blockStyle);
+
+    const keysInputs = Object.entries(conf).map(([key, val]) => {
+      if (key === 'TIME_FORMAT') {
+        inputField = `
+          <select 
+            data-stype="${stype}" 
+            data-prop="${key}"
+            onchange="onPropsChange(event)"
+            onfocus="this.style.borderColor='#4caf50'; this.style.boxShadow='0 0 6px #4caf5080';"
+            onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';"
+            style="flex-grow: 1; padding: 8px 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; transition: border-color 0.3s, box-shadow 0.3s;"
+          >
+            <option value="">Select TIME_FORMAT</option>
+            <option value="YYYY-MM-DD HH:mm:ss" ${val === 'YYYY-MM-DD HH:mm:ss' ? 'selected' : ''}>YYYY-MM-DD HH:mm:ss</option>
+            <option value="MM/DD/YYYY HH:mm:ss" ${val === 'MM/DD/YYYY HH:mm:ss' ? 'selected' : ''}>MM/DD/YYYY HH:mm</option>
+            <option value="DD-MM-YYYY HH:mm:ss" ${val === 'DD-MM-YYYY HH:mm:ss' ? 'selected' : ''}>DD-MM-YYYY HH:mm:ss</option>
+            <option value="X" ${val === 'X' ? 'selected' : ''}>Epoch Time (seconds)</option>
+            <option value="YYYY-MM-DDTHH:mm:ss" ${val === 'YYYY-MM-DDTHH:mm:ss' ? 'selected' : ''}>ISO 8601</option>
+            <option value="custom" ${
+              !['YYYY-MM-DD HH:mm:ss', 'MM/DD/YYYY HH:mm:ss', 'DD-MM-YYYY HH:mm:ss', 'X', 'YYYY-MM-DDTHH:mm:ss'].includes(val) && val !== ''
+                ? 'selected'
+                : ''
+            }>Custom</option>
+          </select>
+        `;
+      } else if (key === 'LINE_BREAKER') {
+        inputField = `
+          <select 
+            data-stype="${stype}" 
+            data-prop="${key}"
+            onchange="onPropsChange(event)"
+            onfocus="this.style.borderColor='#4caf50'; this.style.boxShadow='0 0 6px #4caf5080';"
+            onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';"
+            style="flex-grow: 1; padding: 8px 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; transition: border-color 0.3s, box-shadow 0.3s;"
+          >
+            <option value="">Select LINE_BREAKER</option>
+            <option value="([\\r\\n]+)" ${val === '([\\r\\n]+)' ? 'selected' : ''}>New Line (\\r\\n)</option>
+            <option value="(\\n\\n)" ${val === '(\\n\\n)' ? 'selected' : ''}>Double New Line (\\n\\n)</option>
+            <option value="(\\r\\n\\r\\n)" ${val === '(\\r\\n\\r\\n)' ? 'selected' : ''}>Windows Double New Line (\\r\\n\\r\\n)</option>
+            <option value="(\\d{4}-\\d{2}-\\d{2})" ${val === '(\\d{4}-\\d{2}-\\d{2})' ? 'selected' : ''}>Date Format (YYYY-MM-DD)</option>
+            <option value="custom" ${val !== '' && !['([\\r\\n]+)', '(\\n\\n)', '(\\r\\n\\r\\n)', '(\\d{4}-\\d{2}-\\d{2})'].includes(val) ? 'selected' : ''}>Custom</option>
+          </select>
+        `;
+      } else if (key === 'SHOULD_LINEMERGE') {
+        inputField = `
+          <select 
+            data-stype="${stype}" 
+            data-prop="${key}"
+            onchange="onPropsChange(event)"
+            onfocus="this.style.borderColor='#4caf50'; this.style.boxShadow='0 0 6px #4caf5080';"
+            onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';"
+            style="flex-grow: 1; padding: 8px 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; transition: border-color 0.3s, box-shadow 0.3s;"
+          >
+            <option value="true" ${val === 'true' ? 'selected' : ''}>true</option>
+            <option value="false" ${val === 'false' ? 'selected' : ''}>false</option>
+          </select>
+        `;
+      } else if (key === 'DATETIME_CONFIG') {
+        inputField = `
+          <select 
+            data-stype="${stype}" 
+            data-prop="${key}"
+            onchange="onPropsChange(event)"
+            onfocus="this.style.borderColor='#4caf50'; this.style.boxShadow='0 0 6px #4caf5080';"
+            onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';"
+            style="flex-grow: 1; padding: 8px 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; transition: border-color 0.3s, box-shadow 0.3s;"
+          >
+            <option value="">-- Select DATETIME_CONFIG --</option>
+            <option value="NONE" ${val === 'NONE' ? 'selected' : ''}>NONE</option>
+            <option value="AUTO" ${val === 'AUTO' ? 'selected' : ''}>AUTO</option>
+            <option value="GMT" ${val === 'GMT' ? 'selected' : ''}>GMT</option>
+            <option value="UTC" ${val === 'UTC' ? 'selected' : ''}>UTC</option>
+            <option value="SA" ${val === 'SA' ? 'selected' : ''}>SA</option>
+            <option value="US" ${val === 'US' ? 'selected' : ''}>US</option>
+            <option value="EU" ${val === 'EU' ? 'selected' : ''}>EU</option>
+            <option value="APAC" ${val === 'APAC' ? 'selected' : ''}>APAC</option>
+          </select>
+        `;
+      } else if (key === 'TRUNCATE') {
+        inputField = `
+          <input 
+            type="number"
+            value="${val}" 
+            placeholder="e.g., 999999"
+            data-stype="${stype}" 
+            data-prop="${key}" 
+            oninput="onPropsChange(event)"
+            onfocus="this.style.borderColor='#4caf50'; this.style.boxShadow='0 0 6px #4caf5080';"
+            onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';"
+            style="flex-grow: 1; padding: 8px 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; transition: border-color 0.3s, box-shadow 0.3s;"
+          />
+        `;
+      } else {
+        // Default text input
+        inputField = `
+          <input 
+            type="text"
+            value="${val}" 
+            placeholder="${key}"
+            data-stype="${stype}" 
+            data-prop="${key}" 
+            oninput="onPropsChange(event)"
+            onfocus="this.style.borderColor='#4caf50'; this.style.boxShadow='0 0 6px #4caf5080';"
+            onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';"
+            style="flex-grow: 1; padding: 8px 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; transition: border-color 0.3s, box-shadow 0.3s;"
+          />
+        `;}
+      return `
+        <div style="display: flex; align-items: center; margin-bottom: 14px; gap: 12px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; background: #fafafa;">
+          <label style="flex-shrink: 0; width: 120px; font-weight: 600; color: #333;" title="${key}">${key}</label>
+          ${inputField}
+          <button 
+            type="button"
+            onclick="deletePropKey('${stype}', '${key}')"
+            title="Delete key"
+            style="background-color: #e55353; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600;"
+            onmouseenter="this.style.backgroundColor='#cc4444'"
+            onmouseleave="this.style.backgroundColor='#e55353'"
+          >Delete</button>
+        </div>
+      `;
+    }).join('');
+
+
+    div.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 2px solid #4caf50; padding-bottom: 8px;">
+        <h5 style="margin: 0; font-size: 1.3rem; color: #2c3e50;">${stype}</h5>
+        <button 
+          type="button" 
+          title="Delete this source"
+          class="delete-prop-btn"
+          onclick="deletePropsStanza('${stype}')"
+          data-stype="${stype}"
+          style="background: none; border: none; color: #e55353; font-size: 22px; cursor: pointer;"
+          onmouseenter="this.style.color='#cc0000'"
+          onmouseleave="this.style.color='#e55353'"
+        >❌</button>
+      </div>
+
+      <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 320px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);">
+          <div style="margin-bottom: 20px;">
+            <label for="propsFileUpload_${stype}" style="font-weight: 700; color: #34495e; display: block; margin-bottom: 6px;">Upload props.conf for ${stype}</label>
+            <div style="display: flex; gap: 12px;">
+              <input 
+                type="file" 
+                id="propsFileUpload_${stype}" 
+                accept=".conf,.txt"
+                style="flex-grow: 1; border: 1px solid #bbb; border-radius: 6px; padding: 8px 12px; font-size: 14px;"
+              />
+              <button 
+                type="button"
+                class="preview-btn"
+                data-stype="${stype}"
+                style="background-color: #007bff; border: none; color: white; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: 600;"
+                onmouseenter="this.style.backgroundColor='#0056b3'"
+                onmouseleave="this.style.backgroundColor='#007bff'"
+              >Preview</button>
+            </div>
+          </div>
+
+          ${keysInputs}
+
+          <div style="display: flex; gap: 12px; margin-top: 20px;">
+            <input type="text" id="newKeyInput_${stype}" placeholder="New key" style="flex: 1; padding: 8px 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 5px;" />
+            <input type="text" id="newValueInput_${stype}" placeholder="New value" style="flex: 1; padding: 8px 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 5px;" />
+            <button 
+              type="button" 
+              data-stype="${stype}" 
+              onclick="addNewProp(event)"
+              style="background-color: #4caf50; border: none; color: white; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: 700;"
+              onmouseenter="this.style.backgroundColor='#388e3c'"
+              onmouseleave="this.style.backgroundColor='#4caf50'"
+            >Add</button>
+          </div>
+
+          <button 
+            type="button" 
+            data-stype="${stype}" 
+            onclick="copyPropsConfig(event)" 
+            style="margin-top: 18px; background-color: #28a745; border: none; color: white; padding: 10px 28px; border-radius: 7px; cursor: pointer; font-weight: 700;"
+            onmouseenter="this.style.backgroundColor='#1e7e34'"
+            onmouseleave="this.style.backgroundColor='#28a745'"
+          >Copy Config</button>
+        </div>
+<div style="flex: 1; min-width: 320px;">
+    <!-- Raw File Preview -->
+    <label style="font-weight: 700; color: #34495e; display: block; margin-bottom: 10px;">📄 Raw File Preview before Props</label>
+    <pre id="previewBox_${stype}" style="height: 220px; overflow-y: auto; background: #f7f9fc; border: 1px solid #ddd; padding: 16px; white-space: pre-wrap; border-radius: 8px; font-family: Consolas, 'Courier New', monospace; font-size: 13px; color: #2c3e50;"></pre>
+
+    <!-- Customized props File Preview -->
+    <label style="font-weight: 700; color: #34495e; display: block; margin-bottom: 10px;">📄 Customized props File Preview After Props Update</label>
+    <div id="logTableContainer_${stype}" style="margin-top: 20px; max-height: 320px; overflow-y: auto; border: 1px solid #ccc;">
+    </div>
+
+    <!-- New div to display props.conf content -->
+    <label style="font-weight: 700; color: #34495e; display: block; margin-top: 20px;">📄 Generated props.conf</label>
+    <div id="propsConfContainer_${stype}" style="margin-top: 20px; padding: 16px; background: #f7f9fc; border: 1px solid #ddd; border-radius: 8px;">
+        <pre id="propsConfContent_${stype}" style="background: #f7f9fc; padding: 16px; white-space: pre-wrap; border: 1px solid #ddd; border-radius: 8px; font-family: Consolas, monospace; font-size: 13px; color: #2c3e50;">
+        </pre>
+    </div>
+</div>
+
+      </div>
+    `;
+
+    container.appendChild(div);
+
+    // File input change handler
+    const fileInput = document.getElementById(`propsFileUpload_${stype}`);
+    fileInput.addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const text = await file.text();
+      const newConfig = parsePropsConf(text);
+      if (newConfig[stype]) {
+        propsConfig[stype] = { ...propsConfig[stype], ...newConfig[stype] };
+        renderProps(); // re-render after updating config
+      } else {
+        alert(`Uploaded file does not contain config for sourcetype: ${stype}`);
+      }
+    });
+
+    // Preview file content + parsed config
+    const previewBtn = div.querySelector('.preview-btn');
+    const previewBox = div.querySelector(`#previewBox_${stype}`);
+    const jsonBox = div.querySelector(`#jsonBox_${stype}`);
+
+    previewBtn.addEventListener('click', async () => {
+      const file = fileInput.files[0];
+      if (!file) {
+        previewBox.textContent = 'Please select a .conf or .txt file.';
+        jsonBox.textContent = '';
+        return;
+      }
+
+      if (!file.name.endsWith('.conf') && !file.name.endsWith('.txt')) {
+previewBox.textContent = 'Only .conf and .txt files are supported for preview.';
+jsonBox.textContent = '';
+return;
+}
+  const content = await file.text();
+  previewBox.textContent = content.slice(0, 5000);
+  convertPreviewToTable(stype);
+
+  function convertPreviewToTable(stype) {
+    const previewText = document.getElementById(`previewBox_${stype}`).textContent;
+    const lines = previewText.split('\n');
+
+    const container = document.getElementById(`logTableContainer_${stype}`);
+    container.innerHTML = ''; // Clear previous content
+
+    // 🔥 Get TIME_FORMAT selected by user
+    const timeFormat = document.querySelector(`select[data-stype="${stype}"][data-prop="TIME_FORMAT"]`)?.value || 'YYYY-MM-DD HH:mm:ss';
+
+    // Create table wrapper
+    const wrapper = document.createElement('div');
+    wrapper.style.maxHeight = '320px';
+    wrapper.style.overflowY = 'auto';
+    wrapper.style.border = '1px solid #ccc';
+    wrapper.style.borderRadius = '8px';
+    wrapper.style.marginBottom = '16px';
+
+    // Create table
+    const table = document.createElement('table');
+    table.style.width = '100%';
+    table.style.borderCollapse = 'collapse';
+    table.style.fontFamily = 'Consolas, monospace';
+    table.style.fontSize = '13px';
+
+    table.innerHTML = `
+      <thead>
+        <tr style="background-color: #ecf0f1;">
+          <th style="border: 1px solid #ccc; padding: 8px;">_datetime</th>
+          <th style="border: 1px solid #ccc; padding: 8px;">event logs</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${lines.map(line => {
+          const match = line.match(/^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s*(.*)/);
+          let datetime = match ? match[1] : '';
+          const message = match ? match[2] : line;
+
+          // Reformat datetime using dayjs if match found
+          if (datetime && window.dayjs) {
+            const parsed = dayjs(datetime, 'YYYY-MM-DD HH:mm:ss');
+            if (parsed.isValid()) {
+              datetime = parsed.format(timeFormat);
+            }
+          }
+
+          return `
+            <tr>
+              <td style="border: 1px solid #ccc; padding: 8px; vertical-align: top;">${datetime}</td>
+              <td style="border: 1px solid #ccc; padding: 8px; white-space: pre-wrap;">${message}</td>
+            </tr>`;
+        }).join('')}
+      </tbody>
+    `;
+
+    wrapper.appendChild(table);
+    container.appendChild(wrapper);
+
+    // Add props.conf textarea below the table
+   
+  // Create the label
+  const propsLabel = document.createElement('label');
+  propsLabel.textContent = 'Generated props.conf content:';
+  propsLabel.style.display = 'block';
+  propsLabel.style.fontWeight = 'bold';
+  propsLabel.style.marginBottom = '6px';
+
+  // Create the textarea
+  const propsTextarea = document.createElement('textarea');
+  propsTextarea.id = `propsTextarea_${stype}`;
+  propsTextarea.rows = 10;
+  propsTextarea.style.width = '100%';
+  propsTextarea.style.fontFamily = 'monospace';
+  propsTextarea.style.border = '1px solid #ccc';
+  propsTextarea.style.padding = '8px';
+
+  // Generate dynamic props.conf content
+  let propsContent = `[${stype}]\n`;
+  for (const [key, value] of Object.entries(propsConfigValues)) {
+    if (value !== '') {
+      propsContent += `${key} = ${value}\n`;
+    }
+  }
+
+  // Set textarea content
+  propsTextarea.value = propsContent;
+
+  // Append to container (below your logTableContainer div)
+  //const container = document.getElementById(`logTableContainer_${stype}`);
+  container.appendChild(propsLabel);
+  container.appendChild(propsTextarea);
+}
+
+
+// Example row (replace this loop with your actual parsed data logic)
+
+  // Try parsing and show JSON preview
+  try {
+    const parsed = parsePropsConf(content);
+    if (parsed[stype]) {
+      jsonBox.textContent = JSON.stringify(parsed[stype], null, 2);
+    } else {
+      jsonBox.textContent = 'No config found for sourcetype in file.';
+    }
+  } catch (err) {
+    jsonBox.textContent = `Error parsing file: ${err.message}`;
+  }
+});
+});
+}
+
+function updatePropsConfigContent(stype) {
+  // Assuming propsConfig is an object containing the configuration for each stype
+  if (!propsConfig[stype]) return;
+
+  // Get the config for the given stype
+  const textToDisplay = JSON.stringify(propsConfig[stype], null, 2);
+
+  // Display the generated config in the div for that stype
+  const propsConfContent = document.getElementById(`propsConfContent_${stype}`);
+  if (propsConfContent) {
+    propsConfContent.textContent = textToDisplay;  // Update the content of the <pre> tag
+  }
+}
+
+
+function renderProps1212() {
+  const container = document.getElementById('propsContainer');
+  container.innerHTML = '';
+
+  const blockStyle = `
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    font-family: Arial, sans-serif;
+    color: #333;
+  `;
+
+  const labelStyle = `
+    font-weight: 600;
+    min-width: 130px;
+    color: #444;
+    margin-right: 8px;
+    flex-shrink: 0;
+  `;
+
+  const inputStyle = `
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 14px;
+    flex-grow: 1;
+    transition: border-color 0.2s ease;
+  `;
+
+  const inputFocusStyle = `
+    border-color: #4caf50;
+    outline: none;
+    box-shadow: 0 0 5px #4caf50aa;
+  `;
+
+  const buttonDangerStyle = `
+    background-color: #e55353;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+  `;
+
+  const buttonPrimaryStyle = `
+    background-color: #4caf50;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+  `;
+
+  const buttonSecondaryStyle = `
+    background-color: #6c757d;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 14px;
+  `;
+
+  const buttonSuccessStyle = `
+    background-color: #28a745;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 14px;
+  `;
+
+  Object.entries(propsConfig).forEach(([stype, conf]) => {
+    const div = document.createElement('div');
+    div.setAttribute('style', blockStyle);
+
+    // Build inputs for existing keys dynamically with delete button for each key
+  const keysInputs = Object.entries(conf).map(([key, val]) => `
+  <div style="
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 14px; 
+    gap: 12px; 
+    padding: 8px 12px; 
+    border: 1px solid #ddd; 
+    border-radius: 6px; 
+    background: #fafafa;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  ">
+    <label style="flex-shrink: 0; width: 120px; font-weight: 600; color: #333;" title="${key}">${key}</label>
+    <input 
+      type="text" 
+      style="
+        flex-grow: 1; 
+        padding: 8px 10px; 
+        font-size: 14px; 
+        border: 1px solid #ccc; 
+        border-radius: 4px; 
+        transition: border-color 0.3s, box-shadow 0.3s;
+      " 
+      value="${val}" 
+      placeholder="Value for ${key}" 
+      data-stype="${stype}" 
+      data-prop="${key}" 
+      oninput="onPropsChange(event)" 
+      onfocus="this.style.borderColor='#4caf50'; this.style.boxShadow='0 0 6px #4caf5080';" 
+      onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';"
+    />
+    <button 
+      type="button" 
+      onclick="deletePropKey('${stype}', '${key}')" 
+      style="
+        background-color: #e55353; 
+        border: none; 
+        color: white; 
+        padding: 6px 12px; 
+        border-radius: 4px; 
+        cursor: pointer; 
+        font-weight: 600;
+        transition: background-color 0.3s;
+      " 
+      onmouseenter="this.style.backgroundColor='#cc4444'" 
+      onmouseleave="this.style.backgroundColor='#e55353'"
+      title="Delete key"
+    >Delete</button>
+  </div>
+`).join('');
+
+div.innerHTML = `
+  <div style="
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    margin-bottom: 16px; 
+    border-bottom: 2px solid #4caf50;
+    padding-bottom: 8px;
+  ">
+    <h5 style="margin: 0; font-size: 1.3rem; color: #2c3e50;">${stype}</h5>
+    <button 
+      type="button" 
+      title="Delete this source" 
+      style="
+        background: none; 
+        border: none; 
+        color: #e55353; 
+        font-size: 22px; 
+        cursor: pointer; 
+        transition: color 0.3s;
+      " 
+      data-stype="${stype}" 
+      class="delete-prop-btn"
+      onmouseenter="this.style.color='#cc0000'"
+      onmouseleave="this.style.color='#e55353'"
+    >❌</button>
+  </div>
+
+  <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 320px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);">
+      <div style="margin-bottom: 20px;">
+        <label for="propsFileUpload_${stype}" style="font-weight: 700; color: #34495e; display: block; margin-bottom: 6px;">Upload props.conf for ${stype}</label>
+        <div style="display: flex; gap: 12px;">
+          <input 
+            type="file" 
+            id="propsFileUpload_${stype}" 
+            style="
+              flex-grow: 1; 
+              border: 1px solid #bbb; 
+              border-radius: 6px; 
+              padding: 8px 12px; 
+              font-size: 14px;
+            " 
+            accept=".conf,.txt" 
+          />
+          <button 
+            type="button" 
+            style="
+              background-color: #007bff; 
+              border: none; 
+              color: white; 
+              padding: 8px 18px; 
+              border-radius: 6px; 
+              cursor: pointer; 
+              font-weight: 600;
+              transition: background-color 0.3s;
+            " 
+            data-stype="${stype}" 
+            class="preview-btn"
+            onmouseenter="this.style.backgroundColor='#0056b3'"
+            onmouseleave="this.style.backgroundColor='#007bff'"
+          >Preview</button>
+        </div>
+      </div>
+
+      ${keysInputs}
+
+      <!-- New key-value add UI -->
+      <div style="display: flex; gap: 12px; margin-top: 20px;">
+        <input 
+          type="text" 
+          id="newKeyInput_${stype}" 
+          placeholder="New key" 
+          style="
+            flex: 1; 
+            padding: 8px 10px; 
+            font-size: 14px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            transition: border-color 0.3s, box-shadow 0.3s;
+          "
+          onfocus="this.style.borderColor='#4caf50'; this.style.boxShadow='0 0 6px #4caf5080';" 
+          onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';"
+        />
+        <input 
+          type="text" 
+          id="newValueInput_${stype}" 
+          placeholder="New value" 
+          style="
+            flex: 1; 
+            padding: 8px 10px; 
+            font-size: 14px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            transition: border-color 0.3s, box-shadow 0.3s;
+          "
+          onfocus="this.style.borderColor='#4caf50'; this.style.boxShadow='0 0 6px #4caf5080';" 
+          onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';"
+        />
+        <button 
+          type="button" 
+          data-stype="${stype}" 
+          onclick="addNewProp(event)" 
+          style="
+            background-color: #4caf50; 
+            border: none; 
+            color: white; 
+            padding: 8px 20px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: 700;
+            transition: background-color 0.3s;
+          " 
+          onmouseenter="this.style.backgroundColor='#388e3c'" 
+          onmouseleave="this.style.backgroundColor='#4caf50'"
+        >Add</button>
+      </div>
+
+      <!-- Copy button -->
+      <button 
+        type="button" 
+        data-stype="${stype}" 
+        onclick="copyPropsConfig(event)" 
+        style="
+          margin-top: 18px;
+          background-color: #28a745; 
+          border: none; 
+          color: white; 
+          padding: 10px 28px; 
+          border-radius: 7px; 
+          cursor: pointer; 
+          font-weight: 700;
+          transition: background-color 0.3s;
+        " 
+        onmouseenter="this.style.backgroundColor='#1e7e34'" 
+        onmouseleave="this.style.backgroundColor='#28a745'"
+      >Copy Config</button>
+    </div>
+
+    <div style="flex: 1; min-width: 320px;">
+      <label style="font-weight: 700; color: #34495e; display: block; margin-bottom: 10px;">File Preview</label>
+      <pre 
+        id="previewBox_${stype}" 
+        style="
+          height: 220px; 
+          overflow-y: auto; 
+          background: #f7f9fc; 
+          border: 1px solid #ddd; 
+          padding: 16px; 
+          white-space: pre-wrap; 
+          border-radius: 8px; 
+          box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+          font-family: Consolas, 'Courier New', monospace;
+          font-size: 13px;
+          color: #2c3e50;
+        "
+      ></pre>
+
+      <label style="font-weight: 700; color: #34495e; margin-top: 24px; display: block;">Current Config JSON</label>
+      <pre 
+        id="jsonBox_${stype}" 
+        style="
+          height: 160px; 
+          overflow-y: auto; 
+          background: #eef2f7; 
+          border: 1px solid #ccc; 
+          padding: 14px; 
+          white-space: pre-wrap; 
+          border-radius: 8px; 
+          font-family: Consolas, 'Courier New', monospace;
+          font-size: 13px;
+          color: #34495e;
+        "
+      >${JSON.stringify(conf, null, 2)}</pre>
+    </div>
+  </div>
+`;
+
+
+    container.appendChild(div);
+
+    // File input handling
+    const fileInput = document.getElementById(`propsFileUpload_${stype}`);
+    fileInput.addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const text = await file.text();
+      const newConfig = parsePropsConf(text);
+      if (newConfig[stype]) {
+        propsConfig[stype] = { ...propsConfig[stype], ...newConfig[stype] };
+        renderProps();
+      } else {
+        alert(`Uploaded file does not contain config for source type: ${stype}`);
+      }
+    });
+
+    // Preview button handling
+    const previewBtn = div.querySelector('.preview-btn');
+    const previewBox = div.querySelector(`#previewBox_${stype}`);
+
+    previewBtn.addEventListener('click', async () => {
+      const file = fileInput.files[0];
+      if (!file) {
+        previewBox.textContent = 'Please select a .txt file to preview.';
+        return;
+      }
+
+      if (!file.name.endsWith('.txt')) {
+        previewBox.textContent = 'Only .txt files are supported for preview.';
+        return;
+      }
+
+      const content = await file.text();
+      previewBox.textContent = content.slice(0, 5000);
+    });
+  });
+
+  // Delete button logic for whole stype
+  document.querySelectorAll('.delete-prop-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const stypeToDelete = e.currentTarget.getAttribute('data-stype');
+      if (stypeToDelete && confirm(`Delete the entire config for "${stypeToDelete}"?`)) {
+        delete propsConfig[stypeToDelete];
+        renderProps();
+      }
+    });
+  });
+
+  document.getElementById('propsButtonWrapper').classList.toggle('d-none', Object.keys(propsConfig).length === 0);
+}
+
+// Your existing helpers remain unchanged:
+function deletePropKey(stype, key) {
+  if (!propsConfig[stype]) return;
+  if (confirm(`Delete the key "${key}" from "${stype}"?`)) {
+    delete propsConfig[stype][key];
+    renderProps();
+    updateTransformsFromProps();
+  }
+}
+
+function addNewProp(event) {
+  event.preventDefault();
+  const stype = event.currentTarget.dataset.stype;
+  const keyInput = document.getElementById(`newKeyInput_${stype}`);
+  const valInput = document.getElementById(`newValueInput_${stype}`);
+  const newKey = keyInput.value.trim();
+  const newVal = valInput.value.trim();
+
+  if (!newKey) {
+    alert('Please enter a key name.');
+    return;
+  }
+
+  if (!propsConfig[stype]) propsConfig[stype] = {};
+
+  propsConfig[stype][newKey] = newVal;
+  keyInput.value = '';
+  valInput.value = '';
+
+  renderProps();
+  updateTransformsFromProps();
+}
+
+function onPropsChange(event) {
+  const stype = event.target.dataset.stype;
+  const prop = event.target.dataset.prop;
+  if (propsConfig[stype]) {
+    propsConfig[stype][prop] = event.target.value;
+    console.log(`Updated propsConfig[${stype}][${prop}] =`, event.target.value);
+    updateTransformsFromProps();
+
+    // Update JSON display live
+    const jsonBox = document.getElementById(`jsonBox_${stype}`);
+    if (jsonBox) {
+      jsonBox.textContent = JSON.stringify(propsConfig[stype], null, 2);
+    }
+  }
+  convertPreviewToTable(stype);
+}
+
+function copyPropsConfig(event) {
+  event.preventDefault();
+  const stype = event.currentTarget.dataset.stype;
+
+  // Assuming propsConfig is an object containing the configuration for each stype
+  if (!propsConfig[stype]) return;
+
+  // Get the config for the given stype
+  const textToCopy = JSON.stringify(propsConfig[stype], null, 2);
+
+  // Write the config to the clipboard
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    alert(`Copied config for "${stype}" to clipboard.`);
+  }).catch(() => {
+    alert('Failed to copy to clipboard.');
+  });
+
+  // Log stype (for debugging purposes)
+  console.log(stype);
+
+  // Display the generated config in the div for that stype
+  const propsConfContent = document.getElementById(`propsConfContent_${stype}`);
+  if (propsConfContent) {
+    propsConfContent.textContent = textToCopy;  // Update the content of the <pre> tag
+    console.log(textToCopy);
+  }
+}
+
+
+
+
+//   function updateTransformsFromProps() {
+//   const used = new Set();
+//   Object.values(propsConfig).forEach(p => p.REPORT && used.add(p.REPORT));
+
+//   for (const name in transformsConfig) {
+//     if (!used.has(name)) delete transformsConfig[name];
+//   }
+
+//   used.forEach(name => {
+//     if (!transformsConfig[name]) transformsConfig[name] = { REGEX: '' };
+//   });
+
+//   renderTransforms();
+// }
+
+function deleteTransform(name) {
+  if (!transformsConfig[name]) return;
+  if (confirm(`Delete the entire transform stanza "${name}"?`)) {
+    delete transformsConfig[name];
+    renderTransforms();  // Re-render transforms UI after deletion
+  }
+}
+
+
+
+function updateTransformsFromProps() {
+  transformsConfig = {}; // Reset existing transforms
+
+  // ✅ Extract from all propsConfig objects
+  Object.values(propsConfig).forEach(conf => {
+    Object.keys(conf).forEach(key => {
+      if (key.toLowerCase().startsWith('transform-')) {
+        const name = key.trim();
+
+        transformsConfig[name] = {
+          REGEX: conf[key],
+          FORMAT: '',
+          DEST_KEY: ''
+        };
+      }
+    });
+  });
+
+  // 🔄 Re-render the UI with the updated transforms
+  renderTransforms();
+}
+
+
+  // Remove any transform keys in transformsConfig that are no longer used
+  for (const name in transformsConfig) {
+    if (!used.has(name)) {
+      delete transformsConfig[name];
+    }
+  }
+
+  renderTransforms();
+
+
+  function showPropsOnly() {
+    let out = '';
+    for (const stype in propsConfig) {
+      out += `[${stype}]\n`;
+      const conf = propsConfig[stype];
+      if (conf.TIME_FORMAT) out += `TIME_FORMAT = ${conf.TIME_FORMAT}\n`;
+      if (conf.LINE_BREAKER) out += `LINE_BREAKER = ${conf.LINE_BREAKER}\n`;
+      if (conf.REPORT) out += `REPORT = ${conf.REPORT}\n`;
+      out += '\n';
+    }
+    const pre = document.getElementById('propsOnlyOutput');
+    pre.textContent = out.trim();
+    pre.classList.remove('d-none');
+  }
+
+async function createApp() {
+  const appName = document.getElementById('appName').value.trim();
+  if (!appName) {
+    alert('App Name is required');
+    return;
+  }
+
+  // Validate inputs
+  for (const inp of inputs) {
+    if (!inp.filePath || !inp.sourcetype) {
+      alert('Each input must have a File Path and Sourcetype.');
+      return;
+    }
+    for (const cf of inp.customFields) {
+      if (!cf.key) {
+        alert('Custom field keys cannot be empty.');
+        return;
+      }
+    }
+  }
+
+  // Prepare props object
+  const props = {};
+  for (const [stype, conf] of Object.entries(propsConfig)) {
+    props[stype] = {};
+    for (const key in conf) {
+      if (conf[key]) props[stype][key] = conf[key];
+    }
+  }
+
+  // Prepare transforms object
+  const transforms = {};
+  for (const [name, conf] of Object.entries(transformsConfig)) {
+    transforms[name] = {};
+    if (conf.REGEX) transforms[name].REGEX = conf.REGEX;
+    if (conf.FORMAT) transforms[name].FORMAT = conf.FORMAT;
+    if (conf.DEST_KEY) transforms[name].DEST_KEY = conf.DEST_KEY;
+  }
+
+  // Payload to send
+  const payload = {
+    app_name: appName,
+    inputs: inputs,
+    props: props,
+    transforms: transforms
+  };
+
+  try {
+    const res = await fetch('/create_app', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      alert(result.message);
+      // Redirect using the app_id from the server response
+      window.location.href = `/browse_files/${result.app_id}/default`;
+    } else {
+      alert("Error: " + result.error);
+    }
+  } catch (err) {
+    alert("Request failed: " + err.message);
+  }
+}
+
+
+
+  // Initialize with one empty input
+  addInput();
+  
+// function renderTransforms() {
+//   const container = document.getElementById('transformsContainer');
+//   container.innerHTML = '';
+
+//   if (Object.keys(transformsConfig).length === 0) {
+//     container.innerHTML = '<em class="text-muted">No transforms configured yet.</em>';
+//     return;
+//   }
+
+//   for (const name in transformsConfig) {
+//     const conf = transformsConfig[name];
+//     const div = document.createElement('div');
+//     div.className = 'block';
+//     div.innerHTML = `
+//       <div class="d-flex justify-content-between align-items-center mb-2">
+//         <h5>Transform: <strong>${name}</strong></h5>
+//         <button class="btn btn-sm btn-danger" onclick="deleteTransform('${name}')">Delete</button>
+//       </div>
+//       <div class="mb-3">
+//         <label class="form-label">REGEX</label>
+//         <textarea class="form-control" rows="3" data-tname="${name}" oninput="onTransformInputChange(event)">${conf.REGEX}</textarea>
+//       </div>
+
+//       <div class="container">
+//     <!-- Left Column -->
+//     <div class="column">
+//       <h3>🔧 Transforms Editor</h3>
+//       <input type="file" id="transformUpload" accept=".conf,.txt" />
+//       <button id="clearAllBtn">🧹 Clear All</button>
+//       <textarea id="transformsEditor" placeholder="Edit or paste transforms.conf here..."></textarea>
+//       <button id="downloadBtn">💾 Download transforms.conf</button>
+//       <div id="transformsContainer">No transforms loaded.</div>
+//     </div>
+
+//     <!-- Right Column -->
+//     <div class="column">
+//       <h3>📂 Log File</h3>
+//       <input type="file" id="logUpload" accept=".log,.txt" />
+
+//       <div style="margin: 12px 0;">
+//         <label for="viewSelect">Transform View:</label>
+//         <select id="viewSelect" disabled>
+//           <option value="routing">⚙️ Routing</option>
+//           <option value="masking">🟡 Masking</option>
+//           <option value="filtering">🔴 Filtering</option>
+//           <option value="all">🌍 All</option>
+//         </select>
+//       </div>
+
+//       <h3>📋 Logs Output</h3>
+//       <div id="logDisplay">Upload transforms.conf and log file to see filtered/masked logs here.</div>
+//     </div>
+//   </div>
+//     `;
+//     container.appendChild(div);
+//   }
+// }
+
+// function renderTransforms() {
+//   const appContainer = document.getElementById('appContainer');
+//   if (!appContainer) {
+//     console.error('❌ #appContainer is missing in DOM.');
+//     return;
+//   }
+
+//   // 🔁 Full dynamic shell: layout and main UI
+//   appContainer.innerHTML = `
+//     <div class="container-fluid" style="display:flex; gap: 20px;">
+//       <div class="column" style="flex:1;">
+//         <div id="transformsEditorContainer"></div>
+//         <div id="transformsContainer" class="mt-3"></div>
+//       </div>
+
+//       <div class="column" style="flex:1;">
+//         <h3>📂 Log File</h3>
+//         <input type="file" id="logUpload" accept=".log,.txt" class="form-control form-control-sm mb-2" />
+//         <label for="viewSelect">Transform View:</label>
+//         <select id="viewSelect" class="form-select form-select-sm mb-3" disabled>
+//           <option value="routing">⚙️ Routing</option>
+//           <option value="masking">🟡 Masking</option>
+//           <option value="filtering">🔴 Filtering</option>
+//           <option value="all">🌍 All</option>
+//         </select>
+//         <h3>📋 Logs Output</h3>
+//         <div id="logDisplay" style="white-space: pre-wrap; background:#f8f9fa; padding:10px; border:1px solid #ccc; min-height: 150px;">
+//           Upload transforms.conf and log file to see filtered/masked logs here.
+//         </div>
+//       </div>
+//     </div>
+//   `;
+
+//   // Build Transforms Editor section dynamically
+//   const editorContainer = document.getElementById('transformsEditorContainer');
+//   editorContainer.innerHTML = `
+//     <h3>🔧 Transforms Editor</h3>
+//     <input type="file" id="transformUpload" accept=".conf,.txt" class="form-control form-control-sm mb-2" />
+//     <button id="clearAllBtn" class="btn btn-outline-danger btn-sm mb-2">🧹 Clear All</button>
+//     <textarea id="transformsEditor" placeholder="Edit or paste transforms.conf here..." class="form-control mb-2" style="width: 100%; height: 150px;"></textarea>
+//     <button id="downloadBtn" class="btn btn-success btn-sm">💾 Download transforms.conf</button>
+//   `;
+
+//   // Render individual transform blocks
+//   const container = document.getElementById('transformsContainer');
+//   container.innerHTML = '';
+
+//   if (!transformsConfig || Object.keys(transformsConfig).length === 0) {
+//     container.innerHTML = `<em class="text-muted">No transforms configured yet.</em>`;
+//     document.getElementById('viewSelect').disabled = true;
+//   } else {
+//     document.getElementById('viewSelect').disabled = false;
+
+//     for (const name in transformsConfig) {
+//       const conf = transformsConfig[name];
+//       const div = document.createElement('div');
+//       div.className = 'border p-3 mb-3 rounded bg-light';
+
+//       div.innerHTML = `
+//         <div class="column" style="flex:1;">
+//         <div id="transformsEditorContainer"></div>
+//         <h1>hiii</h1>
+//          <h3>🔧 Transforms Editor</h3>
+//          <div class="container-fluid" style="display:flex; gap: 20px;">
+//       <div class="column" style="flex:1;">
+//         <div id="transformsEditorContainer"></div>
+//         <div id="transformsContainer" class="mt-3"></div>
+//       </div>
+
+//       <div class="column" style="flex:1;">
+//         <h3>📂 Log File</h3>
+//         <input type="file" id="logUpload" accept=".log,.txt" class="form-control form-control-sm mb-2" />
+//         <label for="viewSelect">Transform View:</label>
+//         <select id="viewSelect" class="form-select form-select-sm mb-3" disabled>
+//           <option value="routing">⚙️ Routing</option>
+//           <option value="masking">🟡 Masking</option>
+//           <option value="filtering">🔴 Filtering</option>
+//           <option value="all">🌍 All</option>
+//         </select>
+//         <h3>📋 Logs Output</h3>
+//         <div id="logDisplay" style="white-space: pre-wrap; background:#f8f9fa; padding:10px; border:1px solid #ccc; min-height: 150px;">
+//           Upload transforms.conf and log file to see filtered/masked logs here.
+//         </div>
+//       </div>
+//     </div>
+//     <input type="file" id="transformUpload" accept=".conf,.txt" class="form-control form-control-sm mb-2" />
+//     <button id="clearAllBtn" class="btn btn-outline-danger btn-sm mb-2">🧹 Clear All</button>
+//     <textarea id="transformsEditor" placeholder="Edit or paste transforms.conf here..." class="form-control mb-2" style="width: 100%; height: 150px;"></textarea>
+//     <button id="downloadBtn" class="btn btn-success btn-sm">💾 Download transforms.conf</button>
+
+//         <div id="transformsContainer" class="mt-3"></div>
+//       </div>
+//         <div class="d-flex justify-content-between align-items-center mb-2">
+//           <h5>Transform: <strong>${name}</strong></h5>
+//           <button class="btn btn-sm btn-danger" onclick="deleteTransform('${name}')">Delete</button>
+//         </div>
+//         <div class="mb-3">
+//           <label class="form-label">REGEX</label>
+//           <textarea class="form-control" rows="3" data-tname="${name}" data-field="REGEX" oninput="onTransformInputChange(event)">${conf.REGEX || ''}</textarea>
+//         </div>
+//         <div class="mb-3">
+//           <label class="form-label">FORMAT</label>
+//           <input type="text" class="form-control" value="${conf.FORMAT || ''}" data-tname="${name}" data-field="FORMAT" oninput="onTransformInputChange(event)">
+//         </div>
+//         <div class="mb-3">
+//           <label class="form-label">DEST_KEY</label>
+//           <input type="text" class="form-control" value="${conf.DEST_KEY || ''}" data-tname="${name}" data-field="DEST_KEY" oninput="onTransformInputChange(event)">
+//         </div>
+//       `;
+
+//       container.appendChild(div);
+//     }
+//   }
+
+//   // Re-attach event handlers (implement these yourself)
+//   handleFileUpload();
+//   handleClearAll();
+//   handleDownload();
+//   handleSelectChange();
+// }
+
+
+function renderTransforms() {
+  const appContainer = document.getElementById('appContainer');
+  if (!appContainer) {
+    console.error('❌ #appContainer is missing in DOM.');
+    return;
+  }
+
+  // Full main layout with Transforms Editor + Transforms List + Log File section
+  appContainer.innerHTML = `
+    <div class="container-fluid" style="display:flex; gap: 20px;">
+<div id="transformsContainer" class="mt-3" style="margin-top:20px; flex-grow:1; overflow-y:auto;"></div>
+    
+      <div class="column" style="flex:1; display:flex; flex-direction: column;">
+        <h3>🔧 Transforms Editor</h3>
+        <input type="file" id="transformUpload" accept=".conf,.txt" class="form-control form-control-sm mb-2" />
+        <button id="clearAllBtn" class="btn btn-outline-danger btn-sm mb-2" style="align-self: flex-start;">🧹 Clear All</button>
+        <textarea id="transformsEditor" placeholder="Edit or paste transforms.conf here..." class="form-control mb-2" style="width: 100%; height: 150px; font-family: monospace;"></textarea>
+        <button id="downloadBtn" class="btn btn-success btn-sm" style="align-self: flex-start;">💾 Download transforms.conf</button>
+
+        <div id="transformsContainer" class="mt-3" style="margin-top: 20px; flex-grow: 1; overflow-y: auto;"></div>
+      </div>
+
+      <div class="column" style="flex:1;">
+        <h3>📂 Log File</h3>
+        <input type="file" id="logUpload" accept=".log,.txt" class="form-control form-control-sm mb-2" />
+        <label for="viewSelect" style="font-weight: 600;">Transform View:</label>
+        <select id="viewSelect" class="form-select form-select-sm mb-3" disabled style="width: 100%;">
+          <option value="routing">⚙️ Routing</option>
+          <option value="masking">🟡 Masking</option>
+          <option value="filtering">🔴 Filtering</option>
+          <option value="all">🌍 All</option>
+        </select>
+        <h3>📋 Logs Output</h3>
+       <div id="logDisplay" style="
+  white-space: pre-wrap;
+  background: #1e1e1e;         /* Dark background */
+  color: #e0e0e0;              /* Light text for contrast */
+  padding: 16px;               /* More padding */
+  border: 1px solid #888;      /* Softer border */
+  min-height: 200px;           /* Taller by default */
+  font-family: monospace;
+  font-size: 14px;             /* More readable */
+  border-radius: 6px;          /* Rounded corners */
+  overflow-y: auto;            /* Scroll if needed */
+">
+  Upload transforms.conf and log file to see filtered/masked logs here.
+</div>
+
+      </div>
+
+    </div>
+  `;
+
+  // Now render transforms inside #transformsContainer
+  const container = document.getElementById('transformsContainer');
+  container.innerHTML = '';
+
+  if (!transformsConfig || Object.keys(transformsConfig).length === 0) {
+    container.innerHTML = `<em class="text-muted">No transforms configured yet.</em>`;
+    document.getElementById('viewSelect').disabled = true;
+  } else {
+    document.getElementById('viewSelect').disabled = false;
+
+    for (const name in transformsConfig) {
+      const conf = transformsConfig[name];
+      const div = document.createElement('div');
+
+      div.style.border = '1px solid #ddd';
+      div.style.padding = '15px';
+      div.style.marginBottom = '15px';
+      div.style.borderRadius = '8px';
+      div.style.backgroundColor = '#f9f9f9';
+      div.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+
+      div.innerHTML = `
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h5 style="margin:0;">Transform: <strong>${name}</strong></h5>
+          <button style="background:#dc3545; color:#fff; border:none; border-radius:4px; padding:5px 10px; cursor:pointer;" 
+            onclick="deleteTransform('${name}')">Delete</button>
+        </div>
+        <div class="container-fluid" style="display:flex; gap: 20px;">
+
+    </div>
+
+        <div style="margin-bottom: 10px;">
+       
+        <div style="margin-bottom: 10px;">
+          <label style="font-weight: 600;">REGEX</label><br />
+          <textarea rows="3" data-tname="${name}" data-field="REGEX" oninput="onTransformInputChange(event)" 
+            style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc;">${conf.REGEX || ''}</textarea>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <label style="font-weight: 600;">FORMAT</label><br />
+          <input type="text" data-tname="${name}" data-field="FORMAT" oninput="onTransformInputChange(event)" 
+            value="${conf.FORMAT || ''}" 
+            style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc;" />
+        </div>
+
+        <div>
+          <label style="font-weight: 600;">DEST_KEY</label><br />
+          <input type="text" data-tname="${name}" data-field="DEST_KEY" oninput="onTransformInputChange(event)" 
+            value="${conf.DEST_KEY || ''}" 
+            style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc;" />
+        </div>
+      `;
+
+      container.appendChild(div);
+    }
+  }
+
+  // Attach event handlers (implement these yourself)
+  handleFileUpload();
+  handleClearAll();
+  handleDownload();
+  handleSelectChange();
+}
+
+
+
+function handleFileUpload() {
+  // Handle Transform Conf File Upload
+  document.getElementById('transformUpload').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    console.log('Loading transforms from file...');
+    const text = await file.text();
+    transformsConfig = parseTransformsConf(text);
+    renderTransforms();
+    applyTransformsToLogs();
+  });
+
+  // Handle Log File Upload
+  document.getElementById('logUpload').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    console.log('Loading log file...');
+    const text = await file.text();
+    rawLogs = text.split(/\r?\n/).filter(line => line.trim() !== '');
+    applyTransformsToLogs();
+  });
+}
+
+function handleClearAll() {
+  document.getElementById('clearAllBtn').addEventListener('click', () => {
+    console.log('Clearing all transforms...');
+    transformsConfig = {};
+    rawLogs = [];
+    renderTransforms();
+    applyTransformsToLogs();
+  });
+}
+
+function handleDownload() {
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    console.log('Downloading transforms.conf...');
+    const content = serializeTransformsConf(transformsConfig);
+    const blob = new Blob([content], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'transforms.conf';
+    link.click();
+  });
+}
+
+function handleSelectChange() {
+  document.getElementById('viewSelect').addEventListener('change', (e) => {
+    console.log('View selected:', e.target.value);
+    currentView = e.target.value;
+    applyTransformsToLogs();
+  });
+}
+
+function applyTransformsToLogs() {
+  const outputDiv = document.getElementById('logDisplay');
+  if (rawLogs.length === 0) {
+    outputDiv.textContent = 'Upload a log file to see output.';
+    return;
+  }
+
+  const selectedView = currentView;
+  let resultLogs = [];
+
+  rawLogs.forEach(line => {
+    let transformedLine = line;
+
+    Object.values(transformsConfig).forEach(conf => {
+      const isMasking = conf.FORMAT && conf.DEST_KEY?.toLowerCase() === '_raw';
+      const isFiltering = conf.DEST_KEY?.toLowerCase() === 'nullqueue';
+
+      // Apply Masking
+      if (isMasking && conf.REGEX && selectedView === 'masking') {
+        try {
+          const regex = new RegExp(conf.REGEX, 'gi');
+          transformedLine = transformedLine.replace(regex, conf.FORMAT || '[MASKED]');
+        } catch (error) {
+          console.error("Error applying masking transform: ", error);
+        }
+      }
+
+      // Apply Filtering
+      if (isFiltering && conf.REGEX && selectedView === 'filtering') {
+        try {
+          const regex = new RegExp(conf.REGEX, 'i');
+          if (regex.test(line)) {
+            transformedLine = null;
+          }
+        } catch (error) {
+          console.error("Error applying filtering transform: ", error);
+        }
+      }
+
+      // Apply Routing
+      if (!isMasking && !isFiltering && conf.REGEX && selectedView === 'routing') {
+        try {
+          const regex = new RegExp(conf.REGEX, 'i');
+          if (regex.test(line)) {
+            transformedLine = line;
+          }
+        } catch (error) {
+          console.error("Error applying routing transform: ", error);
+        }
+      }
+    });
+
+    if (transformedLine !== null) {
+      resultLogs.push(transformedLine);
+    }
+  });
+
+  if (resultLogs.length === 0) {
+    outputDiv.textContent = '[No logs to display after applying transforms]';
+  } else {
+    outputDiv.textContent = resultLogs.join('\n');
+  }
+}
+
+function parseTransformsConf(text) {
+  const blocks = text.split(/\n(?=\[)/);
+  const result = {};
+  for (const block of blocks) {
+    const lines = block.trim().split('\n');
+    const nameMatch = lines[0]?.match(/^\[(.+?)\]/);
+    if (!nameMatch) continue;
+
+    const name = nameMatch[1];
+    const conf = {};
+
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line || line.startsWith('#')) continue;
+
+      const [k, ...v] = line.split('=');
+      if (!k || !v) continue;
+      conf[k.trim()] = v.join('=').trim();
+    }
+    result[name] = conf;
+  }
+  return result;
+}
+
+function serializeTransformsConf(transformsConfig) {
+  let result = '';
+  for (const name in transformsConfig) {
+    result += `[${name}]\n`;
+    for (const key in transformsConfig[name]) {
+      result += `${key}=${transformsConfig[name][key]}\n`;
+    }
+    result += '\n';
+  }
+  return result;
+}
+
+
+function onTransformInputChange(event) {
+  const name = event.target.dataset.tname;
+  transformsConfig[name].REGEX = event.target.value;
+}
+
+</script>
+
+<script>
+  const input = document.getElementById('appName');
+  const suggestionsRow = document.getElementById('suggestionsRow');
+  const suggestionsWrapper = document.getElementById('suggestionsWrapper');
+const suffixes = [
+  // 🔄 Data Ingestion & Collection
+  "_collector",     // Collects data from external/internal sources
+
+  // 🧠 Parsing & Processing
+  "_processor",     // Handles heavy event transformation
+  "_normalizer",    // Normalizes different log formats
+  "_modinput",      // Modular input handler
+
+  // 📊 Visualization & Dashboards
+  "_dashboard",     // Includes Splunk dashboards
+  "_insights",      // For key visual insights
+  "_analytics",     // Performs log data analytics
+  "_viewer",        // For visual review/audit of logs
+
+  // 🚨 Monitoring & Alerting
+  "_monitor",       // Real-time log monitoring
+  "_alerts",        // Manages triggered alerts
+  "_watcher",       // Watches logs for anomalies
+  "_notifier",      // Sends out alerts or email notifications
+];
+
+
+  // // 🔍 Security & Compliance
+  // "_auditor",       // Audit and compliance tracking
+  // "_tracker",       // Tracks changes or activity
+  // "_intelligence",  // Advanced threat detection logic
+
+
+  input.addEventListener('input', () => {
+    const value = input.value.trim();
+    suggestionsRow.innerHTML = '';
+    
+    if (value.length === 0) {
+      suggestionsWrapper.style.display = 'none';
+      return;
+    }
+
+    suggestionsWrapper.style.display = 'block';
+
+    const suggestions = suffixes.map(suffix => `${value}${suffix}`);
+
+    suggestions.forEach(suggestion => {
+      const span = document.createElement('span');
+      span.textContent = suggestion;
+      span.style.padding = '6px 12px';
+      span.style.border = '1px solid #ccc';
+      span.style.borderRadius = '5px';
+      span.style.backgroundColor = '#f8f9fa';
+      span.style.cursor = 'pointer';
+
+      span.addEventListener('click', () => {
+        input.value = suggestion;
+        suggestionsWrapper.style.display = 'none';
+      });
+
+      suggestionsRow.appendChild(span);
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!suggestionsRow.contains(e.target) && e.target !== input) {
+      suggestionsWrapper.style.display = 'none';
+    }
+  });
+</script>
+</body>
+</html>

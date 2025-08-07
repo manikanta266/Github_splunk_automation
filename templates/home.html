@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <title>DevSync Repositories</title>
+    <link rel="icon" href="{{ url_for('static', filename='mwt_logo.png') }}" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <title>Your GitHub Repositories</title> -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        .repo-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .repo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .repo-item button {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .repo-item button:hover {
+            background-color: #e53935;
+        }
+        h1 {
+            text-align: center;
+        }
+        .logout-btn {
+            display: block;
+            margin-top: 20px;
+            background-color: #24292f;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .logout-btn:hover {
+            background-color: #0366d6;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pagination a {
+            padding: 5px 10px;
+            margin: 0 5px;
+            text-decoration: none;
+            background-color: #0366d6;
+            color: white;
+            border-radius: 5px;
+        }
+        .pagination a:hover {
+            background-color: #005bb5;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Your GitHub Repositories</h1>
+
+    <ul class="repo-list">
+        {% for repo in repos %}
+            <li class="repo-item">
+                <span>{{ repo.name }}</span>
+                <form action="{{ url_for('delete_repo', repo_name=repo.name) }}" method="POST" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        {% if prev_page %}
+            <a href="{{ url_for('home', page=prev_page) }}">Previous</a>
+        {% endif %}
+        {% if next_page %}
+            <a href="{{ url_for('home', page=next_page) }}">Next</a>
+        {% endif %}
+    </div>
+
+    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+
+</body>
+</html>

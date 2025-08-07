@@ -1,0 +1,567 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>DevSync</title>
+   <link rel="icon" href="{{ url_for('static', filename='mwt_logo.png') }}" type="image/x-icon">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4e73df;
+      --secondary-color: #1cc88a;
+      --dark-color: #5a5c69;
+      --light-color: #f8f9fc;
+    }
+    
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: #f8f9fc;
+    }
+    
+    .sidebar {
+      background: linear-gradient(180deg, var(--primary-color) 0%, #224abe 100%);
+      min-height: 100vh;
+      transition: all 0.3s;
+    }
+    
+    .sidebar .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 0.5rem;
+      border-radius: 0.35rem;
+    }
+    
+    .sidebar .nav-link:hover {
+      color: #fff;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar .nav-link.active {
+      color: #fff;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .sidebar .nav-link i {
+      margin-right: 0.5rem;
+    }
+    
+    .topbar {
+      height: 4.375rem;
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+      background-color: #fff;
+    }
+    
+    .card {
+      border: none;
+      border-radius: 0.35rem;
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+      margin-bottom: 1.5rem;
+    }
+    
+    .card-header {
+      background-color: #f8f9fc;
+      border-bottom: 1px solid #e3e6f0;
+    }
+    
+    .job-card {
+      transition: transform 0.2s;
+    }
+    
+    .job-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.2);
+    }
+    
+    .build-success {
+      border-left: 4px solid var(--secondary-color);
+    }
+    
+    .build-failure {
+      border-left: 4px solid #e74a3b;
+    }
+    
+    .build-running {
+      border-left: 4px solid #f6c23e;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+    
+    .log-entry {
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      padding: 0.25rem 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .log-error {
+      color: #e74a3b;
+      background-color: rgba(231, 74, 59, 0.05);
+    }
+    
+    .log-warning {
+      color: #f6c23e;
+      background-color: rgba(246, 194, 62, 0.05);
+    }
+    
+    .log-info {
+      color: #36b9cc;
+    }
+    
+    .theme-dark {
+      background-color: #2a3042;
+      color: #fff;
+    }
+    
+    .theme-dark .card {
+      background-color: #3c4257;
+      color: #fff;
+    }
+    
+    .theme-dark .card-header {
+      background-color: #2a3042;
+      color: #fff;
+      border-bottom: 1px solid #4a5068;
+    }
+    .dropdown-menu {
+  z-index: 1050; /* Bootstrap default */
+}
+
+    .theme-dark .topbar {
+      background-color: #3c4257;
+      color: #fff;
+    }
+  </style>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<body>
+  <div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar-wrapper">
+      <div class="sidebar-heading text-center py-4">
+        <h3><i class="fas fa-code-branch me-2"></i>DevOps Dashboard</h3>
+      </div>
+      <div class="list-group list-group-flush">
+        <a href="#" class="nav-link active">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="/Github" class="nav-link">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+            <a href="/harness" class="nav-link">
+          <i class="fas fa-server"></i> harness
+        </a>
+         <a href="/splunk_create_app" class="nav-link">
+          <i class="fas fa-project-diagram"></i> Splunk Create App
+        </a>
+        <a href="/jenkins" class="nav-link">
+          <i class="fas fa-server"></i> Jenkins
+        </a>
+        <a href="/splunk" class="nav-link">
+          <i class="fas fa-search"></i> Splunk
+        </a>
+         <a href="/dashboard" class="nav-link">
+          <i class="fas fa-project-diagram"></i> Workflow
+        </a>
+        <!--<a href="/test_connection" class="nav-link">
+         <i class="fa fa-plug" aria-hidden="true"></i> Test Connection
+        </a>
+        <a href="/Settings" class="nav-link">
+          <i class="fas fa-cog"></i> Settings
+        </a> -->
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+      <!-- Top Navigation -->
+     <nav class="topbar navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid d-flex justify-content-between align-items-center">
+    <!-- Left Side (You can put a logo or sidebar toggle here) -->
+    <div class="left-side d-flex align-items-center">
+      <!-- <a class="navbar-brand" href="#">MyApp</a> -->
+      <!-- Uncomment if you need the sidebar toggle -->
+      <!-- <button class="btn btn-link" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+      </button> -->
+    </div>
+
+    <!-- Right Side -->
+    <div class="right-side d-flex align-items-center">
+      <div class="form-check form-switch me-3">
+        <input class="form-check-input" type="checkbox" id="darkModeToggle">
+        <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
+      </div>
+      <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+          <i class="fas fa-user-circle me-1"></i> {{ username }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+          <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="/user_login"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+      
+      <div class="container-fluid px-4">
+       
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+          <h1 class="h3 mb-0 text-gray-800">Jenkins & Splunk Integration</h1>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newJobModal">
+            <i class="fas fa-plus me-1"></i> Create New Job
+          </button>
+        </div>
+
+
+
+                <!-- Job Stats Cards -->
+                <div class="row">
+                    {% for label, count, icon, class in [
+                        ('Total Jobs', job_counts.total, 'fas fa-tasks', 'primary'),
+                        ('Successful Builds', job_counts.success, 'fas fa-check-circle', 'success'),
+                        ('Pending Builds', job_counts.pending, 'fas fa-spinner', 'warning'),
+                        ('Failed Builds', job_counts.failed, 'fas fa-times-circle', 'danger')
+                    ] %}
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-{{ class }} shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-{{ class }} text-uppercase mb-1">{{ label }}</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ count }}</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="{{ icon }} fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Jenkins Jobs List -->
+                <div class="row">
+                    <div class="col-lg-12 mb-4">
+                        <div class="card shadow">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Jenkins Jobs</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for job in jobs[:3] %}
+                                    <div class="col-md-4 mb-4">
+                                        <div class="card job-card build-{{ job.status|lower }} h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <h5 class="card-title mb-0">{{ job.name }}</h5>
+                                                    <span class="badge bg-{{ 'success' if job.status == 'SUCCESS' else 'warning' if job.status == 'RUNNING' else 'danger' }}">{{ job.status }}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <button class="btn btn-sm btn-outline-primary me-1" {% if job.status == 'RUNNING' %}disabled{% endif %}><i class="fas fa-play"></i></button>
+                                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-info-circle"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="text-center mt-4">
+                                    <a href="{{ url_for('jenkins') }}" class="btn btn-primary">View All Jobs</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+<!--         
+        <div class="row">
+          <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+              <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                  <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                      Total Jobs</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">24</div>
+                  </div>
+                  <div class="col-auto">
+                    <i class="fas fa-tasks fa-2x text-gray-300"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+              <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                  <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                      Successful Builds</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                  </div>
+                  <div class="col-auto">
+                    <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+              <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                  <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                      Pending Builds</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
+                  </div>
+                  <div class="col-auto">
+                    <i class="fas fa-spinner fa-2x text-gray-300"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+              <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                  <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                      Failed Builds</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
+                  </div>
+                  <div class="col-auto">
+                    <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="row">
+          <div class="col-lg-12 mb-4">
+            <div class="card shadow">
+              <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Jenkins Jobs</h6>
+                <div class="dropdown no-arrow">
+                  <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-right shadow">
+                    <a class="dropdown-item" href="#">Refresh</a>
+                    <a class="dropdown-item" href="#">Configure</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/jenkins">View All Jobs</a>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  
+                  <div class="col-md-4 mb-4">
+                    <div class="card job-card build-success h-100">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                          <h5 class="card-title mb-0">Frontend-Deploy</h5>
+                          <span class="badge bg-success">Success</span>
+                        </div>
+                        <p class="card-text text-muted small">Deploys React frontend to production</p>
+                        <div class="mb-3">
+                          <span class="badge bg-primary">GitHub</span>
+                          <span class="badge bg-info">NodeJS</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                          <small class="text-muted">#42 - 5 mins ago</small>
+                          <div>
+                            <button class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-play"></i></button>
+                            <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-info-circle"></i></button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                 
+                  <div class="col-md-4 mb-4">
+                    <div class="card job-card build-running h-100">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                          <h5 class="card-title mb-0">Backend-Tests</h5>
+                          <span class="badge bg-warning">Running</span>
+                        </div>
+                        <p class="card-text text-muted small">Runs backend unit and integration tests</p>
+                        <div class="mb-3">
+                          <span class="badge bg-primary">GitHub</span>
+                          <span class="badge bg-danger">Python</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                          <small class="text-muted">#87 - Running</small>
+                          <div>
+                            <button class="btn btn-sm btn-outline-primary me-1 disabled"><i class="fas fa-play"></i></button>
+                            <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-info-circle"></i></button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="col-md-4 mb-4">
+                    <div class="card job-card build-failure h-100">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                          <h5 class="card-title mb-0">DB-Migration</h5>
+                          <span class="badge bg-danger">Failed</span>
+                        </div>
+                        <p class="card-text text-muted small">Applies database migrations</p>
+                        <div class="mb-3">
+                          <span class="badge bg-primary">GitHub</span>
+                          <span class="badge bg-success">PostgreSQL</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                          <small class="text-muted">#15 - 2 hours ago</small>
+                          <div>
+                            <button class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-play"></i></button>
+                            <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-info-circle"></i></button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="text-center mt-3">
+                  <button class="btn btn-primary">View All Jobs</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> -->
+    <!-- Splunk Logs Section -->
+        <div class="row">
+          <div class="col-lg-12 mb-4">
+            <div class="card shadow">
+              <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Splunk Logs</h6>
+                <div class="d-flex">
+                  <div class="input-group input-group-sm me-2" style="width: 200px;">
+                    <input type="text" class="form-control" placeholder="Search logs...">
+                    <button class="btn btn-outline-secondary" type="button"><i class="fas fa-search"></i></button>
+                  </div>
+                  <select class="form-select form-select-sm" style="width: 150px;">
+                    <option>Last 15 mins</option>
+                    <option selected>Last hour</option>
+                    <option>Last 4 hours</option>
+                    <option>Last 24 hours</option>
+                  </select>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                      <tr>
+                        <th>Time</th>
+                        <th>Source</th>
+                        <th>Level</th>
+                        <th>Message</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="log-error">
+                        <td>10:42:15</td>
+                        <td>Backend-Tests</td>
+                        <td><span class="badge bg-danger">ERROR</span></td>
+                        <td>Test test_user_creation failed: AssertionError</td>
+                        <td><button class="btn btn-sm btn-outline-primary">Details</button></td>
+                      </tr>
+                      <tr class="log-warning">
+                        <td>10:41:32</td>
+                        <td>Frontend-Deploy</td>
+                        <td><span class="badge bg-warning">WARN</span></td>
+                        <td>Deprecated API used in component NavBar</td>
+                        <td><button class="btn btn-sm btn-outline-primary">Details</button></td>
+                      </tr>
+                      <tr class="log-info">
+                        <td>10:40:18</td>
+                        <td>DB-Migration</td>
+                        <td><span class="badge bg-info">INFO</span></td>
+                        <td>Migration 0032_alter_user_profile completed</td>
+                        <td><button class="btn btn-sm btn-outline-primary">Details</button></td>
+                      </tr>
+                      <tr class="log-info">
+                        <td>10:39:55</td>
+                        <td>Backend-Tests</td>
+                        <td><span class="badge bg-info">INFO</span></td>
+                        <td>Running 42 tests in test_user_model</td>
+                        <td><button class="btn btn-sm btn-outline-primary">Details</button></td>
+                      </tr>
+                      <tr class="log-error">
+                        <td>10:38:27</td>
+                        <td>CI-Pipeline</td>
+                        <td><span class="badge bg-danger">ERROR</span></td>
+                        <td>Docker build failed: missing requirements.txt</td>
+                        <td><button class="btn btn-sm btn-outline-primary">Details</button></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card-footer bg-light">
+                <nav aria-label="Log navigation">
+                  <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                      <a class="page-link" href="#">Next</a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+</body>
+<script> document.getElementById('darkModeToggle').addEventListener('change', function() {
+      document.body.classList.toggle('theme-dark');
+    });
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+      document.getElementById('sidebar-wrapper').classList.toggle('active');
+    });
+    
+    </script>
+</html>

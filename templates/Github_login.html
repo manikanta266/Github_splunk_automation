@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DevSync</title>
+    <link rel="icon" href="{{ url_for('static', filename='mwt_logo.png') }}" type="image/x-icon">
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        /* Background Animation */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #1c1c1c, #2e2e2e, #3f3f3f);
+            background-size: 400% 400%;
+            animation: bgFlow 20s ease infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            color: #ffffff;
+        }
+
+        @keyframes bgFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glass Container */
+        .glass-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            z-index: 2;
+        }
+
+        .glass-box h1 {
+            font-size: 2.5rem;
+            color: #eaf192;
+            margin-bottom: 1rem;
+        }
+
+        .glass-box p {
+            color: #ccc;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* GitHub Button */
+        .btn-github {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            background: linear-gradient(45deg, #2b8a3e, #37b24d);
+            border: none;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-github:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 20px rgba(55, 178, 77, 0.3);
+        }
+
+        .btn-github i {
+            margin-right: 0.6rem;
+        }
+
+        /* Soft particles */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            animation: float 40s linear infinite;
+        }
+
+        @keyframes float {
+            from {
+                transform: translateY(0) translateX(0);
+                opacity: 0.2;
+            }
+            to {
+                transform: translateY(-100vh) translateX(20vw);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Decorative Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Main Content -->
+    <div class="glass-box">
+        <h1>DevSync</h1>
+        <p>Connect your GitHub. Sync your development life.</p>
+        <a href="/Github/login" class="btn-github">
+            <i class="bi bi-github"></i> Continue with GitHub
+        </a>
+    </div>
+
+    <script>
+        // Create subtle floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                const size = Math.random() * 6 + 4;
+                particle.className = 'particle';
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animationDuration = `${30 + Math.random() * 30}s`;
+                container.appendChild(particle);
+            }
+        }
+
+        window.addEventListener('load', createParticles);
+    </script>
+</body>
+</html>

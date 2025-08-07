@@ -1,0 +1,169 @@
+2025-07-18 08:12:45 INFO User login successful - UserID: U87432, IP: 192.168.10.21
+
+2025-07-18 08:13:01 INFO User logout - UserID: U87432
+
+2025-07-18 08:14:23 TRANSACTION Debit - Acc#: 4532 9823 2345 7723, Amount: $2,150.00, Status: Completed
+
+2025-07-18 08:15:12 TRANSACTION Credit - Acc#: 5566 7744 9988 3322, Amount: $750.00, Status: Completed
+
+2025-07-18 08:16:01 ALERT Failed login attempt - UserID: U11902, IP: 203.0.113.99
+
+2025-07-18 08:17:43 INFO Transfer initiated - From Acc#: 1122334455 to Acc#: 5566778899, Amount: $5,000.00
+
+2025-07-18 08:18:00 ERROR Transaction declined - Acc#: 4532 9823 2345 7723, Reason: Insufficient funds
+
+2025-07-18 08:19:29 INFO Credit card charged - Card#: 4111 1111 1111 1111, Amount: $120.99, Merchant: Store#457
+
+2025-07-18 08:20:47 INFO ATM withdrawal - Acc#: 9988776655, Amount: $200.00, Location: Downtown Branch
+
+2025-07-18 08:22:15 INFO Password changed - UserID: U87432
+
+2025-07-18 08:23:34 TRANSACTION Debit - Acc#: 5566 7744 9988 3322, Amount: $100.00, Status: Completed
+
+2025-07-18 08:24:56 ALERT Multiple failed login attempts detected - UserID: U11902, IP: 203.0.113.99
+
+2025-07-18 08:25:11 INFO User login successful - UserID: U22984, IP: 198.51.100.14
+
+2025-07-18 08:26:07 INFO Credit card payment received - Card#: 5500 0000 0000 0004, Amount: $500.00
+
+2025-07-18 08:27:18 ERROR Account locked due to suspicious activity - UserID: U11902
+
+2025-07-18 08:28:42 INFO Transfer completed - From Acc#: 1122334455 to Acc#: 5566778899, Amount: $5,000.00
+
+2025-07-18 08:29:59 TRANSACTION Debit - Acc#: 4532 9823 2345 7723, Amount: $300.00, Status: Completed
+
+2025-07-18 08:30:45 INFO User logout - UserID: U22984
+
+2025-07-18 08:31:59 INFO Mobile deposit - Acc#: 9988776655, Amount: $1,000.00
+
+2025-07-18 08:32:27 ALERT Suspicious IP detected - IP: 198.51.100.14
+
+2025-07-18 08:33:43 INFO User login successful - UserID: U45122, IP: 192.168.10.21
+
+2025-07-18 08:34:55 TRANSACTION Credit - Acc#: 5566 7744 9988 3322, Amount: $2,000.00, Status: Completed
+
+2025-07-18 08:35:32 INFO Bill payment scheduled - Acc#: 1122334455, Amount: $150.00, Payee: Utility Co.
+
+2025-07-18 08:36:47 ERROR Failed payment - Acc#: 4532 9823 2345 7723, Reason: Card expired
+
+2025-07-18 08:37:51 INFO User login successful - UserID: U98765, IP: 203.0.113.99
+
+2025-07-18 08:38:39 INFO Credit card charged - Card#: 4111 1111 1111 1111, Amount: $75.25, Merchant: Store#742
+
+2025-07-18 08:39:57 ALERT Failed login attempt - UserID: U98765, IP: 198.51.100.14
+
+2025-07-18 08:40:23 TRANSACTION Debit - Acc#: 5566 7744 9988 3322, Amount: $500.00, Status: Completed
+
+2025-07-18 08:41:44 INFO ATM deposit - Acc#: 9988776655, Amount: $300.00, Location: Uptown Branch
+
+2025-07-18 08:42:55 ERROR Transaction timeout - Acc#: 1122334455
+
+2025-07-18 08:43:33 INFO User logout - UserID: U98765
+
+2025-07-18 08:44:21 INFO Transfer initiated - From Acc#: 5566778899 to Acc#: 1122334455, Amount: $700.00
+
+2025-07-18 08:45:09 TRANSACTION Credit - Acc#: 4532 9823 2345 7723, Amount: $850.00, Status: Completed
+
+2025-07-18 08:46:00 INFO User login successful - UserID: U44112, IP: 192.168.10.21
+
+2025-07-18 08:47:29 ALERT Suspicious login location - UserID: U44112, IP: 10.10.10.99
+
+2025-07-18 08:48:36 TRANSACTION Debit - Acc#: 5566 7744 9988 3322, Amount: $1200.00, Status: Completed
+
+2025-07-18 08:49:15 INFO Password reset requested - UserID: U44112
+
+2025-07-18 08:50:52 INFO Credit card charged - Card#: 5500 0000 0000 0004, Amount: $45.00, Merchant: Store#199
+
+2025-07-18 08:51:44 ERROR Account suspension - UserID: U11902, Reason: Multiple failed logins
+
+2025-07-18 08:52:30 INFO User logout - UserID: U44112
+
+2025-07-18 08:53:18 ALERT Failed login attempt - UserID: U22984, IP: 198.51.100.14
+
+2025-07-18 08:54:29 INFO Mobile deposit - Acc#: 9988776655, Amount: $250.00
+
+2025-07-18 08:55:00 TRANSACTION Debit - Acc#: 1122334455, Amount: $400.00, Status: Completed
+
+2025-07-18 08:56:21 INFO Transfer completed - From Acc#: 5566778899 to Acc#: 1122334455, Amount: $700.00
+
+2025-07-18 08:57:30 ERROR Transaction failed - Acc#: 4532 9823 2345 7723, Reason: Network error
+
+2025-07-18 08:58:43 INFO User login successful - UserID: U22984, IP: 198.51.100.14
+
+2025-07-18 08:59:55 ALERT Suspicious IP detected - IP: 203.0.113.99
+
+2025-07-18 09:00:21 INFO Bill payment completed - Acc#: 1122334455, Amount: $150.00
+
+2025-07-18 09:01:33 TRANSACTION Credit - Acc#: 5566 7744 9988 3322, Amount: $300.00, Status: Completed
+
+2025-07-18 09:02:49 INFO Credit card charged - Card#: 4111 1111 1111 1111, Amount: $230.00, Merchant: Store#333
+
+2025-07-18 09:03:56 ERROR Failed payment - Acc#: 5566 7744 9988 3322, Reason: Insufficient funds
+
+2025-07-18 09:04:30 INFO User logout - UserID: U22984
+
+2025-07-18 09:05:45 ALERT Failed login attempt - UserID: U98765, IP: 10.10.10.99
+
+2025-07-18 09:06:20 INFO Mobile deposit - Acc#: 9988776655, Amount: $600.00
+
+2025-07-18 09:07:33 TRANSACTION Debit - Acc#: 1122334455, Amount: $900.00, Status: Completed
+
+2025-07-18 09:08:51 INFO Transfer initiated - From Acc#: 1122334455 to Acc#: 5566778899, Amount: $250.00
+
+2025-07-18 09:09:27 ERROR Account locked - UserID: U44112, Reason: Suspicious activity
+
+2025-07-18 09:10:44 INFO User login successful - UserID: U11902, IP: 203.0.113.99
+
+2025-07-18 09:11:55 ALERT Multiple failed login attempts detected - UserID: U11902, IP: 203.0.113.99
+
+2025-07-18 09:12:39 INFO Credit card payment received - Card#: 5500 0000 0000 0004, Amount: $700.00
+
+2025-07-18 09:13:42 TRANSACTION Credit - Acc#: 5566 7744 9988 3322, Amount: $650.00, Status: Completed
+
+2025-07-18 09:14:55 INFO Password changed - UserID: U87432
+
+2025-07-18 09:15:30 ERROR Transaction timeout - Acc#: 4532 9823 2345 7723
+
+2025-07-18 09:16:21 INFO User logout - UserID: U11902
+
+2025-07-18 09:17:44 ALERT Suspicious IP detected - IP: 10.10.10.99
+
+2025-07-18 09:18:58 INFO Credit card charged - Card#: 4111 1111 1111 1111, Amount: $100.00, Merchant: Store#124
+
+2025-07-18 09:19:33 TRANSACTION Debit - Acc#: 5566 7744 9988 3322, Amount: $350.00, Status: Completed
+
+2025-07-18 09:20:17 INFO Mobile deposit - Acc#: 9988776655, Amount: $400.00
+
+2025-07-18 09:21:05 ERROR Failed payment - Acc#: 1122334455, Reason: Card expired
+
+2025-07-18 09:22:27 INFO User login successful - UserID: U45122, IP: 192.168.10.21
+
+2025-07-18 09:23:38 ALERT Failed login attempt - UserID: U22984, IP: 198.51.100.14
+
+2025-07-18 09:24:50 TRANSACTION Credit - Acc#: 4532 9823 2345 7723, Amount: $450.00, Status: Completed
+
+2025-07-18 09:25:41 INFO Transfer completed - From Acc#: 5566778899 to Acc#: 1122334455, Amount: $700.00
+
+2025-07-18 09:26:22 INFO User logout - UserID: U45122
+
+2025-07-18 09:27:33 ERROR Account suspension - UserID: U11902, Reason: Multiple failed logins
+
+2025-07-18 09:28:59 INFO User login successful - UserID: U87432, IP: 192.168.10.21
+
+2025-07-18 09:29:44 ALERT Suspicious login location - UserID: U87432, IP: 198.51.100.14
+
+2025-07-18 09:30:11 TRANSACTION Debit - Acc#: 5566 7744 9988 3322, Amount: $1250.00, Status: Completed
+
+2025-07-18 09:31:02 INFO Credit card charged - Card#: 5500 0000 0000 0004, Amount: $55.00, Merchant: Store#899
+
+2025-07-18 09:32:18 ERROR Transaction declined - Acc#: 4532 9823 2345 7723, Reason: Insufficient funds
+
+2025-07-18 09:33:27 INFO Password reset requested - UserID: U22984
+
+2025-07-18 09:34:39 INFO ATM withdrawal - Acc#: 9988776655, Amount: $150.00, Location: Downtown Branch
+
+2025-07-18 09:35:53 ALERT Multiple failed login attempts detected - UserID: U98765, IP: 10.10.10.99
+
+2025-07-18 09:36:50 INFO User logout - UserID: U87432
+
+ 
