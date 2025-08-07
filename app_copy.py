@@ -1673,7 +1673,8 @@ github = oauth.register(
     authorize_url='https://github.com/login/oauth/authorize',
     api_base_url='https://api.github.com/',
     client_kwargs={'scope': 'repo'},
-    redirect_uri='https://github-splunk-automation.onrender.com/auth/github/callback'
+    redirect_uri = 'https://github-splunk-automation.onrender.com/auth/github/callback'
+
 )
 
 
@@ -1682,7 +1683,7 @@ github = oauth.register(
 
 @app.route('/Github/login')
 def login():
-    redirect_uri = 'https://github-splunk-automation.onrender.com/auth/github/callback'  # hardcoded for GitHub match
+    redirect_uri = 'https://github-splunk-automation.onrender.com/auth/github/callback'  # ✅ HTTPS redirect URI
     scopes = [
         'repo', 'delete_repo', 'user', 'notifications', 'gist', 'read:org', 'write:org',
         'admin:org', 'read:repo_hook', 'write:repo_hook', 'admin:repo_hook', 'read:discussion',
