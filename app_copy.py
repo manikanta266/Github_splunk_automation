@@ -1646,7 +1646,7 @@ github = oauth.register(
     authorize_url='https://github.com/login/oauth/authorize',
     api_base_url='https://api.github.com/',
     client_kwargs={'scope': 'repo'},
-    redirect_uri='http://127.0.0.1:5000/auth/github/callback'
+    redirect_uri='https://github-splunk-automation.onrender.com/auth/github/callback'
 )
 
 
@@ -2181,8 +2181,8 @@ def update_file(owner, repo):
         'update_id': update_id
     }
 
-    approve_url = f"http://127.0.0.1:5000/approve_update/{update_id}"
-    reject_url = f"http://127.0.0.1:5000/reject_update/{update_id}"
+    approve_url = f"https://github-splunk-automation.onrender.com/approve_update/{update_id}"
+    reject_url = f"https://github-splunk-automation.onrender.com/reject_update/{update_id}"
     msg = EmailMessage()
     msg['Subject'] = f'Approval Required: Update to {file_path} in {owner}/{repo}'
     msg['From'] = "eshwar.bashabathini88@gmail.com"
