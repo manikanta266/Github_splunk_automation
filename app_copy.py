@@ -1634,13 +1634,23 @@ def splunk_users():
 
 
 
+from authlib.integrations.flask_client import OAuth
+from flask import Flask, render_template
+
+
+
+# GitHub login page
 @app.route("/Github")
 def github_Home():
     return render_template('Github_login.html')
+
+# Instantiate OAuth
 oauth = OAuth(app)
+
+# ✅ Register GitHub with the oauth instance, not the class
 github = oauth.register(
     name='github',
-       client_id="Ov23lif5RfEOfW3POIuE",
+    client_id="Ov23lif5RfEOfW3POIuE",
     client_secret="db4a1b83b2c99d7a3157dd1372b67dac6dbd5fb1",
     access_token_url='https://github.com/login/oauth/access_token',
     authorize_url='https://github.com/login/oauth/authorize',
@@ -1651,9 +1661,11 @@ github = oauth.register(
 
 
 
+
+
 @app.route('/Github/login')
 def login():
-    redirect_uri = url_for('auth', _external=True)
+    redirect_uri = 'https://github-splunk-automation.onrender.com/auth/github/callback'  # hardcoded for GitHub match
     scopes = [
         'repo', 'delete_repo', 'user', 'notifications', 'gist', 'read:org', 'write:org',
         'admin:org', 'read:repo_hook', 'write:repo_hook', 'admin:repo_hook', 'read:discussion',
@@ -1661,6 +1673,7 @@ def login():
         'workflow', 'security_events'
     ]
     return github.authorize_redirect(redirect_uri, scope=scopes)
+
 @app.route('/auth/github/callback')
 def auth():
     # Get the GitHub OAuth token after successful authorization
