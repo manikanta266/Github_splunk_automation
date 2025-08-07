@@ -113,7 +113,7 @@ def splunk_create_ui():
 
 @app.route('/existing_app.html')
 def exisiting_splunk_app():
-    return render_template('github_login.html')
+    return render_template('Github_login.html')
 
 
 @app.route('/create_app.html')
