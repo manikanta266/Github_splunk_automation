@@ -5,8 +5,8 @@ import uuid
 from dateutil import parser
 from datetime import datetime, timezone
 from dateutil.relativedelta import relativedelta
-app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Required for session to work
+# app = Flask(__name__)
+# app.secret_key = 'your_secret_key_here'  # Required for session to work
 import time
 import base64
 import requests
@@ -18,6 +18,19 @@ from werkzeug.utils import secure_filename
 
 import random
 
+from flask import Flask
+from flask_session import Session
+
+app = Flask(__name__)
+app.secret_key = 'your-super-secret-key'  # 🔐 Replace with a secure key
+
+app.config.update({
+    'SESSION_TYPE': 'filesystem',
+    'SESSION_COOKIE_SAMESITE': 'None',
+    'SESSION_COOKIE_SECURE': True,
+})
+
+Session(app)
 
 
 
@@ -1674,39 +1687,37 @@ def login():
     ]
     return github.authorize_redirect(redirect_uri, scope=scopes)
 
+from flask import session, redirect, url_for, flash
+from datetime import datetime
+from authlib.integrations.base_client.errors import MismatchingStateError
+
 @app.route('/auth/github/callback')
 def auth():
-    # Get the GitHub OAuth token after successful authorization
-    token = github.authorize_access_token()
+    try:
+        token = github.authorize_access_token()
+    except MismatchingStateError:
+        flash("Login failed due to a security issue. Please try again.")
+        return redirect(url_for('index'))  # 👈 Change this to your homepage route
 
-    # Get the user's GitHub profile
+    # Get GitHub user profile
     user_response = github.get('user')
-    user = user_response.json()  # Convert the response to JSON
-    
-    # Print user details for debugging
-    print(user)
-    
-    # Extract and parse 'created_at' date
-    created_at_str = user.get('created_at', '')
-    repos_response = github.get('user/repos', params={'type': 'all'})
-    repos = repos_response.json()  # Convert repos response to JSON
-    
-    # # Print repos for debugging
-    # print(repos)
+    user = user_response.json()
+    print(user)  # for debugging
 
-    # Parse the 'created_at' timestamp if available
+    created_at_str = user.get('created_at', '')
     if created_at_str:
         created_at = datetime.strptime(created_at_str, "%Y-%m-%dT%H:%M:%SZ")
         created_at_date = created_at.date().strftime("%Y-%m-%d")
-        print(created_at_date)
     else:
         created_at_date = ''
 
-    # Store the token and user info in session
+    # Optional: fetch repos
+    repos_response = github.get('user/repos', params={'type': 'all'})
+    repos = repos_response.json()
+
+    # Store everything in session
     session['github_token'] = token
     session['github_user'] = user['login']
-    
-    # Store detailed user info in session
     session['user_info'] = {
         'name': user.get('name', ''),
         'username': user.get('login', ''),
@@ -1720,8 +1731,8 @@ def auth():
         'created_at': created_at_date
     }
 
-    # Redirect the user to the home page
-    return redirect(url_for('home'))
+    return redirect(url_for('home'))  # 👈 Change to your actual home route
+
 # @app.route('/home')
 # def home():
 #     return 'Welcome to the home page!'
