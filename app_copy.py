@@ -872,6 +872,7 @@ if not exist "${{REPO_NAME}}" (
 from flask import request, jsonify
 from datetime import datetime
 import requests
+import logging
 from requests.auth import HTTPBasicAuth
 
 # JENKINS_URL = "http://47.247.224.149:8080/"
@@ -883,10 +884,12 @@ from requests.auth import HTTPBasicAuth
 def create_jenkins_job_1():
     data = request.json
     
-    print("**********************************************************")
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    print(request.json)
-    print("*************************************************")
+    # Inside your route or function
+    logging.info("**************** Incoming JSON Request ****************")
+    logging.info(request.json)
+    logging.info("*******************************************************")
     if not data:
         return jsonify(success=False, message="No data received."), 400
 
